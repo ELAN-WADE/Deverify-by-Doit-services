@@ -8,8 +8,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   Loader2,
+  HardDrive,
+  FileJson,
+  FileText,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -37,7 +39,7 @@ export default function SettingsPage() {
     a.download = 'participants_backup.json';
     a.click();
     URL.revokeObjectURL(url);
-    setMessage('Data exported successfully!');
+    setMessage('Data exported as JSON successfully!');
     setTimeout(() => setMessage(''), 3000);
   };
 
@@ -53,7 +55,6 @@ export default function SettingsPage() {
         p.registeredAt,
       ].join(','))
     ].join('\n');
-
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -61,7 +62,7 @@ export default function SettingsPage() {
     a.download = 'dsgb_participants_export.csv';
     a.click();
     URL.revokeObjectURL(url);
-    setMessage('CSV exported successfully!');
+    setMessage('Data exported as CSV successfully!');
     setTimeout(() => setMessage(''), 3000);
   };
 
@@ -83,102 +84,119 @@ export default function SettingsPage() {
     setTimeout(() => setMessage(''), 3000);
   };
 
+  const storageKB = (JSON.stringify(participants).length / 1024).toFixed(1);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-5">
+
+      {/* Page header */}
       <div className="text-center space-y-2 mb-6">
-        <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+        <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
           <Settings className="w-7 h-7 text-slate-600" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-        <p className="text-gray-500 text-sm">
-          Manage your data and application settings.
-        </p>
+        <h2 className="text-2xl font-extrabold text-slate-800">Settings</h2>
+        <p className="text-slate-500 text-sm">Manage your data and application preferences.</p>
       </div>
 
-      {/* Success Message */}
+      {/* Success banner */}
       {message && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <p className="text-sm text-emerald-700 font-medium">{message}</p>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
+          <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          </div>
+          <p className="text-sm text-emerald-700 font-semibold">{message}</p>
         </div>
       )}
 
-      {/* Data Info */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Database className="w-4 h-4 text-blue-600" />
-            Database Info
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-500 uppercase">Total Records</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total.toLocaleString()}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-500 uppercase">Storage Used</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {(JSON.stringify(participants).length / 1024).toFixed(1)} KB
-              </p>
+      {/* Database Info */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center">
+            <Database className="w-3.5 h-3.5 text-blue-600" />
+          </div>
+          <h3 className="font-bold text-slate-800 text-sm">Database Info</h3>
+        </div>
+        <div className="p-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+            {[
+              { label: 'Total Records', value: stats.total.toLocaleString(), color: 'text-emerald-600' },
+              { label: 'Storage Used', value: `${storageKB} KB`, color: 'text-blue-600' },
+              { label: 'With Contact', value: stats.withPhone.toLocaleString(), color: 'text-violet-600' },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
+                <p className={`text-2xl font-extrabold ${color}`}>{value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+            <HardDrive className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-blue-800">Offline Storage Mode</p>
+              <p className="text-xs text-blue-600 mt-0.5">All data is stored in your browser's localStorage. No internet required.</p>
             </div>
           </div>
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-700">
-              <span className="font-semibold">Storage Mode:</span> Local (IndexedDB/localStorage)
-            </p>
-            <p className="text-xs text-blue-600 mt-1">
-              All data is stored locally in your browser. No internet connection required.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Export */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Download className="w-4 h-4 text-emerald-600" />
-            Export Data
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-gray-500">
+      {/* Export Data */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+          <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <Download className="w-3.5 h-3.5 text-emerald-600" />
+          </div>
+          <h3 className="font-bold text-slate-800 text-sm">Export Data</h3>
+        </div>
+        <div className="p-5">
+          <p className="text-sm text-slate-500 mb-4">
             Export all participant data for backup or external use.
           </p>
-          <div className="flex gap-3">
-            <Button onClick={handleExportCSV} variant="outline" className="gap-2">
-              <Download className="w-4 h-4" />
-              Export as CSV
-            </Button>
-            <Button onClick={handleExportJSON} variant="outline" className="gap-2">
-              <Download className="w-4 h-4" />
-              Export as JSON
-            </Button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              onClick={handleExportCSV}
+              className="action-btn group"
+            >
+              <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-bold text-slate-800">Export as CSV</p>
+                <p className="text-xs text-slate-400">Spreadsheet format</p>
+              </div>
+            </button>
+            <button
+              onClick={handleExportJSON}
+              className="action-btn group"
+            >
+              <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
+                <FileJson className="w-4 h-4 text-violet-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-bold text-slate-800">Export as JSON</p>
+                <p className="text-xs text-slate-400">Raw data backup</p>
+              </div>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Danger Zone */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold flex items-center gap-2 text-red-600">
-            <AlertTriangle className="w-4 h-4" />
-            Danger Zone
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
+      <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-red-100 flex items-center gap-2 bg-red-50/50">
+          <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+          </div>
+          <h3 className="font-bold text-red-700 text-sm">Danger Zone</h3>
+        </div>
+        <div className="p-5 space-y-3">
+          <div className="flex items-center justify-between p-4 bg-orange-50 border border-orange-100 rounded-xl">
             <div>
-              <p className="text-sm font-medium text-gray-900">Reset to Original Data</p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Restore the original {stats.total.toLocaleString()} records from the spreadsheet
-              </p>
+              <p className="text-sm font-bold text-slate-800">Reset to Original Data</p>
+              <p className="text-xs text-slate-500 mt-0.5">Restore all original records from the spreadsheet</p>
             </div>
             <Button
               variant="outline"
-              className="gap-2 text-orange-600 border-orange-200 hover:bg-orange-50"
+              className="gap-2 text-orange-600 border-orange-200 hover:bg-orange-100 rounded-xl shrink-0"
               onClick={() => setShowResetDialog(true)}
             >
               <RotateCcw className="w-4 h-4" />
@@ -186,42 +204,38 @@ export default function SettingsPage() {
             </Button>
           </div>
 
-          <div className="flex items-center justify-between bg-red-50 rounded-lg p-4">
+          <div className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-xl">
             <div>
-              <p className="text-sm font-medium text-red-700">Clear All Data</p>
-              <p className="text-xs text-red-500 mt-0.5">
-                Remove all participants from local storage
-              </p>
+              <p className="text-sm font-bold text-red-800">Clear All Data</p>
+              <p className="text-xs text-red-500 mt-0.5">Permanently remove all participants from storage</p>
             </div>
             <Button
               variant="outline"
-              className="gap-2 text-red-600 border-red-200 hover:bg-red-100"
+              className="gap-2 text-red-600 border-red-200 hover:bg-red-100 rounded-xl shrink-0"
               onClick={() => setShowClearDialog(true)}
             >
               <Trash2 className="w-4 h-4" />
               Clear
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Reset Dialog */}
       <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Reset Data</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-orange-500" />
+              Reset Data
+            </DialogTitle>
             <DialogDescription>
-              This will restore all {stats.total.toLocaleString()} original participants from the spreadsheet.
-              Any newly registered participants will be lost.
+              This will restore all {stats.total.toLocaleString()} original participants. Any new registrations will be lost.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowResetDialog(false)}>Cancel</Button>
-            <Button
-              className="bg-orange-600 hover:bg-orange-700 gap-2"
-              onClick={handleReset}
-              disabled={resetting}
-            >
+            <Button variant="outline" onClick={() => setShowResetDialog(false)} className="rounded-xl">Cancel</Button>
+            <Button className="bg-orange-600 hover:bg-orange-700 gap-2 rounded-xl" onClick={handleReset} disabled={resetting}>
               {resetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
               Reset Data
             </Button>
@@ -231,20 +245,19 @@ export default function SettingsPage() {
 
       {/* Clear Dialog */}
       <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-red-600 flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-red-600">
               <AlertTriangle className="w-5 h-5" />
               Clear All Data
             </DialogTitle>
             <DialogDescription>
-              This will permanently remove all participant data from your browser&apos;s local storage.
-              You will need to refresh the page to reload the original data.
+              This will permanently remove all participant data from your browser's local storage. You'll need to refresh to reload original data.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowClearDialog(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleClear} className="gap-2">
+            <Button variant="outline" onClick={() => setShowClearDialog(false)} className="rounded-xl">Cancel</Button>
+            <Button variant="destructive" onClick={handleClear} className="gap-2 rounded-xl">
               <Trash2 className="w-4 h-4" />
               Clear All Data
             </Button>

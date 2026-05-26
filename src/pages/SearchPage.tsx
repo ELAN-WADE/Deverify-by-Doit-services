@@ -10,8 +10,8 @@ import {
   GraduationCap,
   ArrowLeft,
   AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useParticipantStore } from '@/hooks/useParticipantStore';
@@ -27,7 +27,6 @@ export default function SearchPage() {
 
   const selectedParticipant = participants.find(p => p.id === selectedId);
 
-  // Check for ID in URL
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) {
@@ -58,230 +57,215 @@ export default function SearchPage() {
     setSelectedId(null);
   };
 
-  return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Back button if viewing a participant */}
-      {selectedParticipant && (
-        <Button
-          variant="ghost"
-          className="gap-2 text-gray-600"
+  // ─── Participant Detail View ───
+  if (selectedParticipant) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-4">
+        <button
           onClick={() => setSelectedId(null)}
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 text-sm font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to search
-        </Button>
-      )}
+        </button>
 
-      {!selectedParticipant ? (
-        <>
-          {/* Search Section */}
-          <div className="text-center space-y-2 mb-8">
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-emerald-600" />
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          {/* Header banner */}
+          <div className="gradient-hero px-6 py-8 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-emerald-500/10 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/30">
+                <span className="text-white text-3xl font-extrabold">
+                  {selectedParticipant.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-3 py-1 mb-3">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400 text-xs font-semibold">Training Verified</span>
+              </div>
+              <h2 className="text-2xl font-extrabold text-white">{selectedParticipant.name}</h2>
+              <p className="text-slate-400 text-sm mt-1">Participant ID: #{selectedParticipant.id}</p>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Participant Lookup</h2>
-            <p className="text-gray-500 text-sm">
-              Search for participants by email or phone number to verify training attendance.
-            </p>
           </div>
 
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-6">
-              {/* Search Type Toggle */}
-              <div className="flex gap-2 mb-4">
-                <Button
-                  variant={searchType === 'email' ? 'default' : 'outline'}
-                  onClick={() => { setSearchType('email'); setSearched(false); setResults([]); }}
-                  className={searchType === 'email' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-                  size="sm"
-                >
-                  <Mail className="w-4 h-4 mr-1" />
-                  By Email
-                </Button>
-                <Button
-                  variant={searchType === 'phone' ? 'default' : 'outline'}
-                  onClick={() => { setSearchType('phone'); setSearched(false); setResults([]); }}
-                  className={searchType === 'phone' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-                  size="sm"
-                >
-                  <Phone className="w-4 h-4 mr-1" />
-                  By Phone
-                </Button>
+          {/* Details grid */}
+          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase mb-2">
+                <Phone className="w-3.5 h-3.5" />
+                Phone Number
               </div>
+              <p className="font-bold text-slate-800 text-base">{selectedParticipant.phone || 'Not provided'}</p>
+            </div>
 
-              {/* Search Input */}
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    placeholder={searchType === 'email' ? 'Enter email address...' : 'Enter phone number...'}
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="pl-10"
-                  />
-                </div>
-                <Button
-                  onClick={handleSearch}
-                  className="bg-emerald-600 hover:bg-emerald-700 gap-2"
-                >
-                  <Search className="w-4 h-4" />
-                  Search
-                </Button>
-                {searched && (
-                  <Button variant="outline" onClick={clearSearch}>
-                    Clear
-                  </Button>
-                )}
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase mb-2">
+                <User className="w-3.5 h-3.5" />
+                Gender
               </div>
-            </CardContent>
-          </Card>
+              <p className="font-bold text-slate-800 text-base">
+                {selectedParticipant.sex === 'F' ? 'Female' : selectedParticipant.sex === 'M' ? 'Male' : 'Not specified'}
+              </p>
+            </div>
 
-          {/* Results */}
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 sm:col-span-2">
+              <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase mb-2">
+                <Mail className="w-3.5 h-3.5" />
+                Email Address
+              </div>
+              <p className="font-bold text-slate-800 text-base break-all">{selectedParticipant.email || 'Not provided'}</p>
+            </div>
+
+            <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 sm:col-span-2">
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase mb-2">
+                <GraduationCap className="w-3.5 h-3.5" />
+                Training Status
+              </div>
+              <p className="font-bold text-emerald-700 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4" />
+                Completed Training — Verified ✓
+              </p>
+            </div>
+          </div>
+
+          <div className="px-6 pb-6 flex justify-center">
+            <Button variant="outline" onClick={() => setSelectedId(null)} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Search
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Search View ───
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* Page header */}
+      <div className="text-center space-y-2">
+        <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <Search className="w-7 h-7 text-emerald-600" />
+        </div>
+        <h2 className="text-2xl font-extrabold text-slate-800">Participant Lookup</h2>
+        <p className="text-slate-500 text-sm">
+          Search for participants by email or phone number to verify training attendance.
+        </p>
+      </div>
+
+      {/* Search card */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        {/* Toggle */}
+        <div className="flex gap-2 mb-4 p-1 bg-slate-100 rounded-xl w-fit">
+          {([
+            { key: 'email' as const, label: 'By Email', icon: Mail },
+            { key: 'phone' as const, label: 'By Phone', icon: Phone },
+          ]).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => { setSearchType(key); setSearched(false); setResults([]); }}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                searchType === key
+                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Input row */}
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <Input
+              placeholder={searchType === 'email' ? 'Enter email address...' : 'Enter phone number...'}
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="pl-10 h-11 bg-slate-50 border-slate-200 focus:border-emerald-400 focus:ring-emerald-400/20 rounded-xl"
+            />
+          </div>
+          <Button
+            onClick={handleSearch}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white h-11 px-5 rounded-xl gap-2 font-semibold shadow-md shadow-emerald-600/20"
+          >
+            <Search className="w-4 h-4" />
+            Search
+          </Button>
           {searched && (
-            <div className="space-y-4">
-              {results.length > 0 ? (
-                <>
-                  <p className="text-sm text-gray-600">
-                    Found <span className="font-semibold text-emerald-600">{results.length}</span> participant(s)
-                  </p>
-                  <div className="space-y-2">
-                    {results.map(p => (
-                      <Card
-                        key={p.id}
-                        className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        onClick={() => setSelectedId(p.id)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-                              <User className="w-6 h-6 text-emerald-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-gray-900 truncate">{p.name}</h3>
-                              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 mt-1">
-                                {p.phone && (
-                                  <span className="flex items-center gap-1">
-                                    <Phone className="w-3 h-3" />
-                                    {p.phone}
-                                  </span>
-                                )}
-                                {p.email && (
-                                  <span className="flex items-center gap-1">
-                                    <Mail className="w-3 h-3" />
-                                    {p.email}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" />
-                                Found
-                              </span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <XCircle className="w-8 h-8 text-red-400" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">No Results Found</h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      No participant matches &quot;{query}&quot; in the database.
-                    </p>
-                    <Button
-                      onClick={() => { /* scroll to register or navigate */ }}
-                      variant="outline"
-                      className="gap-2"
-                      onClickCapture={() => window.location.href = '/register'}
-                    >
-                      <AlertCircle className="w-4 h-4" />
-                      Register as New Participant
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            <Button variant="outline" onClick={clearSearch} className="h-11 rounded-xl">
+              Clear
+            </Button>
           )}
-        </>
-      ) : (
-        /* Participant Detail View */
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-6 lg:p-8">
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                <GraduationCap className="w-12 h-12 text-white" />
-              </div>
-              <div className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-sm font-medium px-3 py-1 rounded-full mb-3">
-                <CheckCircle2 className="w-4 h-4" />
-                Training Verified
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">{selectedParticipant.name}</h2>
-              <p className="text-gray-500 mt-1">Participant ID: #{selectedParticipant.id}</p>
-            </div>
+        </div>
+      </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                  <Phone className="w-4 h-4" />
-                  Phone Number
-                </div>
-                <p className="font-semibold text-gray-900">
-                  {selectedParticipant.phone || 'Not provided'}
-                </p>
+      {/* Results */}
+      {searched && (
+        <div className="space-y-3">
+          {results.length > 0 ? (
+            <>
+              <p className="text-sm text-slate-500 font-medium">
+                Found <span className="font-bold text-emerald-600">{results.length}</span> participant(s)
+              </p>
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-50">
+                {results.map(p => (
+                  <div
+                    key={p.id}
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => setSelectedId(p.id)}
+                  >
+                    <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                      <span className="text-white text-base font-extrabold">
+                        {p.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-slate-800 truncate">{p.name}</h3>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mt-0.5">
+                        {p.phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3 h-3" />{p.phone}
+                          </span>
+                        )}
+                        {p.email && (
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3" />{p.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="badge-success shrink-0">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Verified
+                    </span>
+                  </div>
+                ))}
               </div>
-
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                  <User className="w-4 h-4" />
-                  Gender
-                </div>
-                <p className="font-semibold text-gray-900">
-                  {selectedParticipant.sex === 'F' ? 'Female' : selectedParticipant.sex === 'M' ? 'Male' : 'Not specified'}
-                </p>
+            </>
+          ) : (
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-10 text-center">
+              <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <XCircle className="w-7 h-7 text-red-400" />
               </div>
-
-              <div className="bg-gray-50 rounded-xl p-4 sm:col-span-2">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                  <Mail className="w-4 h-4" />
-                  Email Address
-                </div>
-                <p className="font-semibold text-gray-900 break-all">
-                  {selectedParticipant.email || 'Not provided'}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-4 sm:col-span-2">
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                  <GraduationCap className="w-4 h-4" />
-                  Training Status
-                </div>
-                <p className="font-semibold text-emerald-600 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Has completed training
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8 flex justify-center">
+              <h3 className="font-bold text-slate-800 mb-1">No Results Found</h3>
+              <p className="text-sm text-slate-400 mb-5">
+                No participant matches "{query}" in the database.
+              </p>
               <Button
                 variant="outline"
-                onClick={() => setSelectedId(null)}
                 className="gap-2"
+                onClick={() => window.location.href = '/register'}
               >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Search
+                <AlertCircle className="w-4 h-4" />
+                Register as New Participant
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       )}
     </div>
   );

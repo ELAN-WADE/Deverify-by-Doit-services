@@ -45,8 +45,8 @@ export function useParticipantStore() {
       setParticipants(stored);
       setInitialized(true);
     } else {
-      // Fetch the embedded JSON file
-      fetch('/participants.json')
+      // Fetch the embedded JSON file using the correct base path
+      fetch(`${import.meta.env.BASE_URL}participants.json`)
         .then(res => res.json())
         .then((data: Participant[]) => {
           setParticipants(data);
@@ -104,7 +104,7 @@ export function useParticipantStore() {
   }, []);
 
   const resetData = useCallback(() => {
-    fetch('/participants.json')
+    fetch(`${import.meta.env.BASE_URL}participants.json`)
       .then(res => res.json())
       .then((data: Participant[]) => {
         setParticipants(data);
