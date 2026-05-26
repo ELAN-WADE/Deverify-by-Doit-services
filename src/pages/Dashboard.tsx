@@ -59,22 +59,6 @@ export default function Dashboard() {
 
   const quickActions = [
     {
-      label: 'Lookup Participant',
-      description: 'Search by email or phone number',
-      icon: Search,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      path: '/search',
-    },
-    {
-      label: 'Register New',
-      description: 'Add a new participant',
-      icon: UserPlus,
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-secondary',
-      path: '/register',
-    },
-    {
       label: 'View All Participants',
       description: `Browse all ${stats.total.toLocaleString()} records`,
       icon: Users,
@@ -171,7 +155,7 @@ export default function Dashboard() {
 
           {stats.recentRegistrations.length > 0 ? (
             <div className="divide-y divide-indigo-800/30">
-              {stats.recentRegistrations.slice(0, 8).map(p => (
+              {stats.recentRegistrations.slice(0, 4).map(p => (
                 <div
                   key={p.id}
                   className="flex items-center gap-3 px-5 py-3.5 hover:bg-indigo-900/40 cursor-pointer transition-colors"

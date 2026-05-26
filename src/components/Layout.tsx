@@ -109,8 +109,13 @@ export default function Layout({ children }: LayoutProps) {
         </header>
 
         {/* Scrollable page content */}
-        <main className="flex-1 overflow-hidden">
-          <div className="page-scroll h-full px-4 lg:px-6 py-6">
+        <main className="flex-1 overflow-hidden relative">
+          {/* Watermark */}
+          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.02]">
+            <ShieldCheck className="w-[80vh] h-[80vh] text-slate-900" />
+          </div>
+
+          <div className="page-scroll h-full px-4 lg:px-6 py-6 relative z-10">
             {children}
           </div>
         </main>
