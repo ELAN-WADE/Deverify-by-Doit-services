@@ -61,8 +61,8 @@ export default function ParticipantsPage() {
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex items-center gap-3 flex-1">
-          <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 text-emerald-600" />
+          <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5 text-secondary" />
           </div>
           <div>
             <h2 className="font-extrabold text-slate-800">All Participants</h2>
@@ -83,7 +83,7 @@ export default function ParticipantsPage() {
             placeholder="Search participants..."
             value={searchQuery}
             onChange={e => { setSearchQuery(e.target.value); setPage(0); }}
-            className="pl-10 bg-slate-50 border-slate-200 rounded-xl h-10 focus:border-emerald-400"
+            className="pl-10 bg-slate-50 border-slate-200 rounded-xl h-10 focus:border-indigo-400"
           />
         </div>
         <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit h-fit">
@@ -96,7 +96,7 @@ export default function ParticipantsPage() {
               onClick={() => setSearchType(key)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 searchType === key
-                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                  ? 'bg-white text-secondary shadow-sm border border-slate-200'
                   : 'text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -137,7 +137,7 @@ export default function ParticipantsPage() {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-extrabold shadow-sm ${
-                          idx % 4 === 0 ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                          idx % 4 === 0 ? 'bg-gradient-to-br from-indigo-400 to-indigo-600' :
                           idx % 4 === 1 ? 'bg-gradient-to-br from-blue-400 to-blue-600' :
                           idx % 4 === 2 ? 'bg-gradient-to-br from-violet-400 to-violet-600' :
                           'bg-gradient-to-br from-pink-400 to-rose-500'

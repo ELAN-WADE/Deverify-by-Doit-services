@@ -72,16 +72,16 @@ export default function SearchPage() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {/* Header banner */}
           <div className="gradient-hero px-6 py-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-emerald-500/10 pointer-events-none" />
+            <div className="absolute inset-0 bg-secondary/10 pointer-events-none" />
             <div className="relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/30">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-secondary/30">
                 <span className="text-white text-3xl font-extrabold">
                   {selectedParticipant.name.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-3 py-1 mb-3">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 text-xs font-semibold">Training Verified</span>
+              <div className="inline-flex items-center gap-1.5 bg-secondary/20 border border-indigo-400/30 rounded-full px-3 py-1 mb-3">
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="text-indigo-400 text-xs font-semibold">Training Verified</span>
               </div>
               <h2 className="text-2xl font-extrabold text-white">{selectedParticipant.name}</h2>
               <p className="text-slate-400 text-sm mt-1">Participant ID: #{selectedParticipant.id}</p>
@@ -116,12 +116,12 @@ export default function SearchPage() {
               <p className="font-bold text-slate-800 text-base break-all">{selectedParticipant.email || 'Not provided'}</p>
             </div>
 
-            <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 sm:col-span-2">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase mb-2">
+            <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100 sm:col-span-2">
+              <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase mb-2">
                 <GraduationCap className="w-3.5 h-3.5" />
                 Training Status
               </div>
-              <p className="font-bold text-emerald-700 flex items-center gap-2">
+              <p className="font-bold text-secondary flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4" />
                 Completed Training — Verified ✓
               </p>
@@ -144,8 +144,8 @@ export default function SearchPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Page header */}
       <div className="text-center space-y-2">
-        <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
-          <Search className="w-7 h-7 text-emerald-600" />
+        <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <Search className="w-7 h-7 text-secondary" />
         </div>
         <h2 className="text-2xl font-extrabold text-slate-800">Participant Lookup</h2>
         <p className="text-slate-500 text-sm">
@@ -166,7 +166,7 @@ export default function SearchPage() {
               onClick={() => { setSearchType(key); setSearched(false); setResults([]); }}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                 searchType === key
-                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                  ? 'bg-white text-secondary shadow-sm border border-slate-200'
                   : 'text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -185,12 +185,12 @@ export default function SearchPage() {
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="pl-10 h-11 bg-slate-50 border-slate-200 focus:border-emerald-400 focus:ring-emerald-400/20 rounded-xl"
+              className="pl-10 h-11 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-400/20 rounded-xl"
             />
           </div>
           <Button
             onClick={handleSearch}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white h-11 px-5 rounded-xl gap-2 font-semibold shadow-md shadow-emerald-600/20"
+            className="bg-secondary hover:bg-indigo-700 text-white h-11 px-5 rounded-xl gap-2 font-semibold shadow-md shadow-secondary/20"
           >
             <Search className="w-4 h-4" />
             Search
@@ -209,7 +209,7 @@ export default function SearchPage() {
           {results.length > 0 ? (
             <>
               <p className="text-sm text-slate-500 font-medium">
-                Found <span className="font-bold text-emerald-600">{results.length}</span> participant(s)
+                Found <span className="font-bold text-secondary">{results.length}</span> participant(s)
               </p>
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-50">
                 {results.map(p => (
@@ -218,7 +218,7 @@ export default function SearchPage() {
                     className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer"
                     onClick={() => setSelectedId(p.id)}
                   >
-                    <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                    <div className="w-11 h-11 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center shrink-0 shadow-sm">
                       <span className="text-white text-base font-extrabold">
                         {p.name.charAt(0).toUpperCase()}
                       </span>

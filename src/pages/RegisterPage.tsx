@@ -67,7 +67,7 @@ export default function RegisterPage() {
       <div className="max-w-lg mx-auto">
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="gradient-hero px-6 py-10 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/30">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-secondary/30">
               <CheckCircle2 className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-extrabold text-white mb-1">Registration Successful!</h2>
@@ -89,7 +89,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="px-6 pb-6 flex flex-col sm:flex-row gap-3">
-            <Button onClick={handleReset} className="flex-1 bg-emerald-600 hover:bg-emerald-700 gap-2 rounded-xl h-11">
+            <Button onClick={handleReset} className="flex-1 bg-secondary hover:bg-indigo-700 gap-2 rounded-xl h-11">
               <UserPlus className="w-4 h-4" />
               Register Another
             </Button>
@@ -108,8 +108,8 @@ export default function RegisterPage() {
     <div className="max-w-lg mx-auto space-y-5">
       {/* Page header */}
       <div className="text-center space-y-2">
-        <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
-          <UserPlus className="w-7 h-7 text-emerald-600" />
+        <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <UserPlus className="w-7 h-7 text-secondary" />
         </div>
         <h2 className="text-2xl font-extrabold text-slate-800">Register Participant</h2>
         <p className="text-slate-500 text-sm">Add a new participant to the attendance database.</p>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
             placeholder="Enter full name..."
             value={formData.name}
             onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-emerald-400 focus:bg-white transition-colors ${errors.name ? 'border-red-300 bg-red-50' : ''}`}
+            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-indigo-400 focus:bg-white transition-colors ${errors.name ? 'border-red-300 bg-red-50' : ''}`}
           />
           {errors.name && (
             <p className="text-xs text-red-500 flex items-center gap-1 font-medium">
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             placeholder="e.g. 08012345678"
             value={formData.phone}
             onChange={e => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '') }))}
-            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-emerald-400 focus:bg-white transition-colors ${errors.phone ? 'border-red-300 bg-red-50' : ''}`}
+            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-indigo-400 focus:bg-white transition-colors ${errors.phone ? 'border-red-300 bg-red-50' : ''}`}
             maxLength={11}
           />
           {errors.phone && (
@@ -171,7 +171,7 @@ export default function RegisterPage() {
             placeholder="optional@email.com"
             value={formData.email}
             onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-emerald-400 focus:bg-white transition-colors ${errors.email ? 'border-red-300 bg-red-50' : ''}`}
+            className={`h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-indigo-400 focus:bg-white transition-colors ${errors.email ? 'border-red-300 bg-red-50' : ''}`}
           />
           {errors.email && (
             <p className="text-xs text-red-500 flex items-center gap-1 font-medium">
@@ -210,7 +210,7 @@ export default function RegisterPage() {
         <Button
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2 h-12 rounded-xl font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all"
+          className="w-full bg-secondary hover:bg-indigo-700 text-white gap-2 h-12 rounded-xl font-bold text-sm shadow-lg shadow-secondary/20 transition-all"
         >
           {submitting ? (
             <><Loader2 className="w-4 h-4 animate-spin" />Registering...</>

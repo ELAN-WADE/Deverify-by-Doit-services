@@ -9,8 +9,8 @@ import {
   ArrowRight,
   Search,
   Clock,
-  Activity,
   CheckCircle2,
+  ShieldCheck,
 } from 'lucide-react';
 import { useParticipantStore } from '@/hooks/useParticipantStore';
 
@@ -23,9 +23,9 @@ export default function Dashboard() {
       title: 'Total Participants',
       value: stats.total.toLocaleString(),
       icon: Users,
-      gradient: 'from-emerald-500 to-emerald-600',
-      lightBg: 'bg-emerald-50',
-      lightIcon: 'text-emerald-600',
+      gradient: 'from-secondary to-indigo-800',
+      lightBg: 'bg-indigo-50',
+      lightIcon: 'text-secondary',
       change: 'All registered records',
     },
     {
@@ -47,13 +47,13 @@ export default function Dashboard() {
       change: `${stats.total ? Math.round((stats.withEmail / stats.total) * 100) : 0}% coverage`,
     },
     {
-      title: 'Female',
-      value: stats.female.toLocaleString(),
+      title: 'Gender Split',
+      value: `${stats.female}F / ${stats.male}M`,
       icon: UserCheck,
       gradient: 'from-pink-500 to-rose-500',
       lightBg: 'bg-pink-50',
       lightIcon: 'text-pink-600',
-      change: `${stats.total ? Math.round((stats.female / stats.total) * 100) : 0}% of total`,
+      change: `${stats.total ? Math.round((stats.female / stats.total) * 100) : 0}% female`,
     },
   ];
 
@@ -70,8 +70,8 @@ export default function Dashboard() {
       label: 'Register New',
       description: 'Add a new participant',
       icon: UserPlus,
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
+      iconBg: 'bg-indigo-100',
+      iconColor: 'text-secondary',
       path: '/register',
     },
     {
@@ -88,39 +88,40 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-6xl mx-auto">
 
       {/* Hero Banner */}
-      <div className="gradient-hero rounded-2xl p-6 lg:p-8 text-white overflow-hidden relative">
+      <div className="gradient-hero rounded-2xl p-6 lg:p-8 text-white overflow-hidden relative shadow-lg shadow-secondary/20">
         {/* Decorative circles */}
-        <div className="absolute -right-10 -top-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute right-20 bottom-0 w-32 h-32 bg-blue-500/10 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute right-20 bottom-0 w-32 h-32 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
+
+        {/* App Icon at right end */}
+        <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
+          <ShieldCheck className="w-48 h-48 text-white" />
+        </div>
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="flex-1">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full px-3 py-1 mb-3">
-              <Activity className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400 text-xs font-semibold">Live Verification System</span>
-            </div>
-            <h2 className="text-2xl lg:text-3xl font-extrabold text-white mb-2">
+            <h2 className="text-2xl lg:text-4xl font-extrabold text-white mb-2">
               Participant Attendance
             </h2>
-            <p className="text-slate-400 text-sm">
-              Search, register, and manage training participants. Fully offline, all data stored locally.
+            <p className="text-indigo-200 text-sm mb-8 max-w-lg font-medium">
+              Search, register, and manage training participants.
             </p>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <button
-              onClick={() => navigate('/search')}
-              className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50"
-            >
-              <Search className="w-4 h-4" />
-              Lookup
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200"
-            >
-              <UserPlus className="w-4 h-4" />
-              Register
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
+              <button
+                onClick={() => navigate('/search')}
+                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white text-secondary hover:bg-slate-50 px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200 shadow-md shadow-black/10"
+              >
+                <Search className="w-4 h-4" />
+                Lookup Participant
+              </button>
+              <button
+                onClick={() => navigate('/register')}
+                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-secondary border border-white/30 hover:bg-indigo-800 text-white px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200"
+              >
+                <UserPlus className="w-4 h-4" />
+                Register New
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -135,12 +136,12 @@ export default function Dashboard() {
                 <div className={`w-11 h-11 ${stat.lightBg} rounded-xl flex items-center justify-center`}>
                   <Icon className={`w-5 h-5 ${stat.lightIcon}`} />
                 </div>
-                <TrendingUp className="w-4 h-4 text-emerald-400 opacity-60" />
+                <TrendingUp className="w-4 h-4 text-secondary opacity-60" />
               </div>
               <p className="text-2xl font-extrabold text-slate-800">{stat.value}</p>
               <p className="text-xs font-semibold text-slate-500 mt-0.5">{stat.title}</p>
-              <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                <span className="w-1 h-1 bg-emerald-400 rounded-full inline-block" />
+              <p className="text-[11px] text-secondary font-medium mt-1 flex items-center gap-1">
+                <span className="w-1 h-1 bg-secondary rounded-full inline-block" />
                 {stat.change}
               </p>
             </div>
@@ -152,59 +153,59 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
         {/* Recent Registrations — takes 3 cols */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="lg:col-span-3 bg-secondary rounded-2xl shadow-sm overflow-hidden text-white">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-indigo-800/50">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="w-7 h-7 bg-indigo-900 rounded-lg flex items-center justify-center">
+                <Clock className="w-3.5 h-3.5 text-indigo-300" />
               </div>
-              <h3 className="font-semibold text-slate-800 text-sm">Recent Registrations</h3>
+              <h3 className="font-extrabold text-white text-sm tracking-wide">Recent Registrations</h3>
             </div>
             <button
               onClick={() => navigate('/participants')}
-              className="text-xs text-emerald-600 font-semibold hover:text-emerald-700 flex items-center gap-1"
+              className="text-xs text-indigo-300 font-bold hover:text-white flex items-center gap-1 transition-colors"
             >
               View all <ArrowRight className="w-3 h-3" />
             </button>
           </div>
 
           {stats.recentRegistrations.length > 0 ? (
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-indigo-800/30">
               {stats.recentRegistrations.slice(0, 8).map(p => (
                 <div
                   key={p.id}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 cursor-pointer transition-colors"
+                  className="flex items-center gap-3 px-5 py-3.5 hover:bg-indigo-900/40 cursor-pointer transition-colors"
                   onClick={() => navigate(`/search?id=${p.id}`)}
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                    <span className="text-white text-xs font-bold">
+                  <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-indigo-400/20">
+                    <span className="text-white text-sm font-black">
                       {p.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{p.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{p.phone || p.email || 'No contact'}</p>
+                    <p className="text-sm font-extrabold text-white truncate">{p.name}</p>
+                    <p className="text-[11px] font-medium text-indigo-300 truncate mt-0.5">{p.phone || p.email || 'No contact provided'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="badge-success">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-indigo-900/60 text-indigo-200 border border-indigo-700">
                       <CheckCircle2 className="w-3 h-3" />
                       Verified
                     </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-300" />
+                    <ArrowRight className="w-3.5 h-3.5 text-indigo-400/50" />
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-14 text-center px-5">
-              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mb-3">
-                <Clock className="w-6 h-6 text-slate-400" />
+              <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center mb-3">
+                <Clock className="w-6 h-6 text-indigo-400" />
               </div>
-              <p className="text-sm font-semibold text-slate-600">No recent registrations</p>
-              <p className="text-xs text-slate-400 mt-1">Participants you register will appear here</p>
+              <p className="text-sm font-bold text-white">No recent registrations</p>
+              <p className="text-xs text-indigo-300 mt-1">Participants you register will appear here</p>
               <button
                 onClick={() => navigate('/register')}
-                className="mt-4 text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                className="mt-4 text-xs font-bold text-indigo-200 hover:text-white"
               >
                 Register a participant →
               </button>

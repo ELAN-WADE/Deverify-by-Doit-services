@@ -100,11 +100,11 @@ export default function SettingsPage() {
 
       {/* Success banner */}
       {message && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
-          <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
+          <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4 text-secondary" />
           </div>
-          <p className="text-sm text-emerald-700 font-semibold">{message}</p>
+          <p className="text-sm text-secondary font-semibold">{message}</p>
         </div>
       )}
 
@@ -119,7 +119,7 @@ export default function SettingsPage() {
         <div className="p-5">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
             {[
-              { label: 'Total Records', value: stats.total.toLocaleString(), color: 'text-emerald-600' },
+              { label: 'Total Records', value: stats.total.toLocaleString(), color: 'text-secondary' },
               { label: 'Storage Used', value: `${storageKB} KB`, color: 'text-blue-600' },
               { label: 'With Contact', value: stats.withPhone.toLocaleString(), color: 'text-violet-600' },
             ].map(({ label, value, color }) => (
@@ -142,8 +142,8 @@ export default function SettingsPage() {
       {/* Export Data */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-          <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-            <Download className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <Download className="w-3.5 h-3.5 text-secondary" />
           </div>
           <h3 className="font-bold text-slate-800 text-sm">Export Data</h3>
         </div>
@@ -156,8 +156,8 @@ export default function SettingsPage() {
               onClick={handleExportCSV}
               className="action-btn group"
             >
-              <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
-                <FileText className="w-4 h-4 text-emerald-600" />
+              <div className="w-9 h-9 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 text-secondary" />
               </div>
               <div className="text-left">
                 <p className="text-sm font-bold text-slate-800">Export as CSV</p>
