@@ -27,7 +27,7 @@ const PAGE_SIZE = 50;
 
 export default function ParticipantsPage() {
   const navigate = useNavigate();
-  const { filteredParticipants, searchQuery, setSearchQuery, searchType, setSearchType, deleteParticipant } = useParticipantStore();
+  const { filteredParticipants, searchQuery, setSearchQuery, deleteParticipant } = useParticipantStore();
   const [page, setPage] = useState(0);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -85,25 +85,6 @@ export default function ParticipantsPage() {
             onChange={e => { setSearchQuery(e.target.value); setPage(0); }}
             className="pl-10 bg-slate-50 border-slate-200 rounded-xl h-10 focus:border-indigo-400"
           />
-        </div>
-        <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit h-fit">
-          {([
-            { key: 'email' as const, label: 'Email', icon: Mail },
-            { key: 'phone' as const, label: 'Phone', icon: Phone },
-          ]).map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setSearchType(key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                searchType === key
-                  ? 'bg-white text-secondary shadow-sm border border-slate-200'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              <Icon className="w-3 h-3" />
-              {label}
-            </button>
-          ))}
         </div>
       </div>
 

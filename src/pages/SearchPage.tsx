@@ -20,7 +20,6 @@ export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { participants, searchParticipants } = useParticipantStore();
   const [query, setQuery] = useState('');
-  const [searchType, setSearchType] = useState<'email' | 'phone'>('email');
   const [results, setResults] = useState<typeof participants>([]);
   const [searched, setSearched] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -41,7 +40,7 @@ export default function SearchPage() {
       setSearched(false);
       return;
     }
-    const res = searchParticipants(query, searchType);
+    const res = searchParticipants(query);
     setResults(res);
     setSearched(true);
   };
@@ -155,33 +154,14 @@ export default function SearchPage() {
 
       {/* Search card */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-        {/* Toggle */}
-        <div className="flex gap-2 mb-4 p-1 bg-slate-100 rounded-xl w-fit">
-          {([
-            { key: 'email' as const, label: 'By Email', icon: Mail },
-            { key: 'phone' as const, label: 'By Phone', icon: Phone },
-          ]).map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => { setSearchType(key); setSearched(false); setResults([]); }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                searchType === key
-                  ? 'bg-white text-secondary shadow-sm border border-slate-200'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
+
 
         {/* Input row */}
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <Input
-              placeholder={searchType === 'email' ? 'Enter email address...' : 'Enter phone number...'}
+              placeholder="Search by name, email, or phone number..."
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}

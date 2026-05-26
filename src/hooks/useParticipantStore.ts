@@ -68,14 +68,15 @@ export function useParticipantStore() {
     }
   }, [participants, initialized]);
 
-  const searchParticipants = useCallback((query: string, type: 'email' | 'phone' = 'email'): Participant[] => {
+  const searchParticipants = useCallback((query: string): Participant[] => {
     if (!query.trim()) return [];
     const lower = query.toLowerCase().trim();
     return participants.filter(p => {
-      if (type === 'email') {
-        return p.email.toLowerCase().includes(lower);
-      }
-      return p.phone.includes(lower);
+      return (
+        p.name.toLowerCase().includes(lower) ||
+        (p.email && p.email.toLowerCase().includes(lower)) ||
+        (p.phone && p.phone.includes(lower))
+      );
     });
   }, [participants]);
 
@@ -115,8 +116,11 @@ export function useParticipantStore() {
   const filteredParticipants = searchQuery.trim()
     ? participants.filter(p => {
         const q = searchQuery.toLowerCase().trim();
-        if (searchType === 'email') return p.email.toLowerCase().includes(q);
-        return p.phone.includes(q);
+        return (
+          p.name.toLowerCase().includes(q) ||
+          (p.email && p.email.toLowerCase().includes(q)) ||
+          (p.phone && p.phone.includes(q))
+        );
       })
     : participants;
 
