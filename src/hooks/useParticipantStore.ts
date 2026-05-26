@@ -128,8 +128,7 @@ export function useParticipantStore() {
     withPhone: participants.filter(p => p.phone && p.phone !== '0').length,
     withEmail: participants.filter(p => p.email && p.email.length > 3).length,
     recentRegistrations: [...participants]
-      .filter(p => p.registeredAt && p.registeredAt !== '2024-01-01T00:00:00.000Z')
-      .sort((a, b) => new Date(b.registeredAt).getTime() - new Date(a.registeredAt).getTime())
+      .sort((a, b) => b.id - a.id)
       .slice(0, 10),
   };
 

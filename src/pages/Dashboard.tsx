@@ -79,7 +79,7 @@ export default function Dashboard() {
 
         {/* App Icon at right end */}
         <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
-          <ShieldCheck className="w-48 h-48 text-white" />
+          <ShieldCheck className="w-48 h-48 text-white" strokeWidth={3} />
         </div>
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
@@ -93,7 +93,7 @@ export default function Dashboard() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
               <button
                 onClick={() => navigate('/search')}
-                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white text-secondary hover:bg-slate-50 px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200 shadow-md shadow-black/10"
+                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-md shadow-black/10"
               >
                 <Search className="w-4 h-4" />
                 Lookup Participant
