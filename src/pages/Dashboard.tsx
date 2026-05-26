@@ -84,7 +84,7 @@ export default function Dashboard() {
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="flex-1">
-            <h2 className="text-2xl lg:text-4xl font-extrabold text-white mb-2">
+            <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2">
               Participant Attendance
             </h2>
             <p className="text-indigo-200 text-sm mb-8 max-w-lg font-medium">
@@ -93,14 +93,14 @@ export default function Dashboard() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
               <button
                 onClick={() => navigate('/search')}
-                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-md shadow-black/10"
+                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md shadow-black/10"
               >
                 <Search className="w-4 h-4" />
                 Lookup Participant
               </button>
               <button
                 onClick={() => navigate('/register')}
-                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-secondary border border-white/30 hover:bg-indigo-800 text-white px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all duration-200"
+                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-secondary border border-white/30 hover:bg-indigo-800 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200"
               >
                 <UserPlus className="w-4 h-4" />
                 Register New
@@ -122,7 +122,7 @@ export default function Dashboard() {
                 </div>
                 <TrendingUp className="w-4 h-4 text-secondary opacity-60" />
               </div>
-              <p className="text-2xl font-extrabold text-slate-800">{stat.value}</p>
+              <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
               <p className="text-xs font-semibold text-slate-500 mt-0.5">{stat.title}</p>
               <p className="text-[11px] text-secondary font-medium mt-1 flex items-center gap-1">
                 <span className="w-1 h-1 bg-secondary rounded-full inline-block" />
@@ -143,7 +143,7 @@ export default function Dashboard() {
               <div className="w-7 h-7 bg-indigo-900 rounded-lg flex items-center justify-center">
                 <Clock className="w-3.5 h-3.5 text-indigo-300" />
               </div>
-              <h3 className="font-extrabold text-white text-sm tracking-wide">Recent Registrations</h3>
+              <h3 className="font-bold text-white text-sm tracking-wide">Recent Registrations</h3>
             </div>
             <button
               onClick={() => navigate('/participants')}
@@ -162,12 +162,12 @@ export default function Dashboard() {
                   onClick={() => navigate(`/search?id=${p.id}`)}
                 >
                   <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-indigo-400/20">
-                    <span className="text-white text-sm font-black">
+                    <span className="text-white text-sm font-bold">
                       {p.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-extrabold text-white truncate">{p.name}</p>
+                    <p className="text-sm font-bold text-white truncate">{p.name}</p>
                     <p className="text-[11px] font-medium text-indigo-300 truncate mt-0.5">{p.phone || p.email || 'No contact provided'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
