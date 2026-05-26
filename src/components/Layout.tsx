@@ -104,7 +104,6 @@ export default function Layout({ children }: LayoutProps) {
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-extrabold text-slate-800 leading-tight">Welcome to Deverify</h1>
           </div>
         </header>
 
