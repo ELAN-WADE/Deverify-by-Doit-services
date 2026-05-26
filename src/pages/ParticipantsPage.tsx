@@ -163,7 +163,7 @@ export default function ParticipantsPage() {
                       variant="ghost"
                       size="sm"
                       className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      onClick={e => { e.stopPropagation(); setDeleteId(p.id); }}
+                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); setDeleteId(p.id); }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
