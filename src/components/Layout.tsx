@@ -54,8 +54,16 @@ export default function Layout({ children }: LayoutProps) {
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-sm text-slate-800 leading-tight">Deverify</p>
-            <p className="text-[11px] text-secondary font-medium truncate">by DOit serivices</p>
+            <p className="font-bold text-sm text-slate-800 leading-tight mb-0.5">Deverify</p>
+            <div className="flex items-end gap-[3px] text-secondary">
+              <div className="bg-secondary text-white px-1.5 py-[2px] rounded-[2px] transform -skew-x-[15deg] flex items-center justify-center">
+                <span className="font-black text-[9px] transform skew-x-[15deg] tracking-tighter leading-none">DOIT</span>
+              </div>
+              <div className="flex flex-col leading-none pb-[1px]">
+                <span className="font-extrabold text-[11px] tracking-tight leading-none">Services</span>
+                <span className="font-black text-[5px] text-right tracking-widest leading-none mt-[1px]">.NG</span>
+              </div>
+            </div>
           </div>
           <button
             className="lg:hidden ml-auto text-slate-400 hover:text-secondary p-1 rounded-lg hover:bg-slate-50 transition-colors"
