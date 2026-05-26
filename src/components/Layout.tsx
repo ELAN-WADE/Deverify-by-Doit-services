@@ -48,20 +48,19 @@ export default function Layout({ children }: LayoutProps) {
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        {/* Brand */}
-        <div className="px-5 py-6 border-b border-slate-100 flex items-center gap-3 shrink-0">
-          <div className="w-9 h-9 bg-secondary rounded-xl flex items-center justify-center shadow-lg shadow-secondary/20 shrink-0">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
+        <div className="px-5 py-6 border-b border-slate-100 flex items-center shrink-0">
           <div className="min-w-0">
-            <p className="font-bold text-sm text-slate-800 leading-tight mb-0.5">Deverify</p>
-            <div className="flex items-end gap-[3px] text-secondary">
-              <div className="bg-secondary text-white px-1.5 py-[2px] rounded-[2px] transform -skew-x-[15deg] flex items-center justify-center">
-                <span className="font-black text-[9px] transform skew-x-[15deg] tracking-tighter leading-none">DOIT</span>
-              </div>
-              <div className="flex flex-col leading-none pb-[1px]">
-                <span className="font-extrabold text-[11px] tracking-tight leading-none">Services</span>
-                <span className="font-black text-[5px] text-right tracking-widest leading-none mt-[1px]">.NG</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-bold text-base text-slate-800 leading-tight">Deverify</span>
+              <span className="text-[11px] text-slate-500 font-medium pt-0.5">by</span>
+              <div className="flex items-end gap-[3px] text-secondary ml-0.5">
+                <div className="bg-secondary text-white px-1.5 py-[2px] rounded-[2px] transform -skew-x-[15deg] flex items-center justify-center">
+                  <span className="font-black text-[9px] transform skew-x-[15deg] tracking-tighter leading-none">DOIT</span>
+                </div>
+                <div className="flex flex-col leading-none pb-[1px]">
+                  <span className="font-extrabold text-[11px] tracking-tight leading-none">Services</span>
+                  <span className="font-black text-[5px] text-right tracking-widest leading-none mt-[1px]">.NG</span>
+                </div>
               </div>
             </div>
           </div>
