@@ -73,7 +73,6 @@ export function useParticipantStore() {
     const lower = query.toLowerCase().trim();
     return participants.filter(p => {
       return (
-        p.name.toLowerCase().includes(lower) ||
         (p.email && p.email.toLowerCase().includes(lower)) ||
         (p.phone && p.phone.includes(lower))
       );
@@ -117,7 +116,6 @@ export function useParticipantStore() {
     ? participants.filter(p => {
         const q = searchQuery.toLowerCase().trim();
         return (
-          p.name.toLowerCase().includes(q) ||
           (p.email && p.email.toLowerCase().includes(q)) ||
           (p.phone && p.phone.includes(q))
         );
