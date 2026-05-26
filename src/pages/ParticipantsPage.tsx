@@ -74,12 +74,12 @@ export default function ParticipantsPage() {
             </div>
             <div className="flex gap-2">
               <Button
-                variant={searchType === 'name' ? 'default' : 'outline'}
-                onClick={() => setSearchType('name')}
+                variant={searchType === 'email' ? 'default' : 'outline'}
+                onClick={() => setSearchType('email')}
                 size="sm"
-                className={searchType === 'name' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                className={searchType === 'email' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
               >
-                Name
+                Email
               </Button>
               <Button
                 variant={searchType === 'phone' ? 'default' : 'outline'}
