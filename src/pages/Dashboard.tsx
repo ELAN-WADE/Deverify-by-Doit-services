@@ -78,8 +78,8 @@ export default function Dashboard() {
         <div className="absolute right-20 bottom-0 w-32 h-32 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
 
         {/* App Icon at right end */}
-        <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none bg-white rounded-full p-4 shadow-xl">
-          <ShieldCheck className="w-32 h-32 text-secondary" strokeWidth={3} />
+        <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
+          <ShieldCheck className="w-48 h-48 text-white" strokeWidth={3} />
         </div>
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
