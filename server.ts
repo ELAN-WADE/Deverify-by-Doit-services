@@ -1,5 +1,4 @@
-// server.ts
-import { serve, file } from 'bun';
+import { serve, file, gzipSync } from 'bun';
 import { Database } from 'bun:sqlite';
 import path from 'path';
 import fs from 'fs';
@@ -222,6 +221,18 @@ async function main() {
             headers.set('Cache-Control', 'public, max-age=31536000, immutable');
           } else {
             headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+          }
+
+          // Implement GZIP compression for text/js/css assets to drastically reduce bundle size
+          const acceptEncoding = req.headers.get('accept-encoding') || '';
+          if (
+            acceptEncoding.includes('gzip') &&
+            (f.type.includes('text') || f.type.includes('javascript') || f.type.includes('json') || f.type.includes('css'))
+          ) {
+            const buffer = await f.arrayBuffer();
+            const compressed = gzipSync(buffer);
+            headers.set('Content-Encoding', 'gzip');
+            return new Response(compressed, { headers });
           }
 
           return new Response(f, { headers });
