@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/Deverify-by-Doit-services/',
+  base: '/',
   plugins: [
     inspectAttr(),
     react(),
@@ -21,8 +21,8 @@ export default defineConfig({
         background_color: '#0f172a',
         display: 'standalone',
         orientation: 'any',
-        scope: '/Deverify-by-Doit-services/',
-        start_url: '/Deverify-by-Doit-services/',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
             src: 'icons/icon-base.png',
