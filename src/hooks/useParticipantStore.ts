@@ -51,7 +51,7 @@ export function useParticipantStore() {
   // 2. Fetch from Live Database
   const fetchParticipants = useCallback(async () => {
     try {
-      const res = await fetch('/api/participants');
+      const res = await fetch('/api/participants', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         saveCache(data); // update cache

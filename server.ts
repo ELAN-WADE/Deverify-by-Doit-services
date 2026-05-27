@@ -123,7 +123,10 @@ async function main() {
             try {
               const data = getParticipants.all();
               return new Response(JSON.stringify(data), {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate'
+                },
               });
             } catch (e: any) {
               return new Response(JSON.stringify({ error: e.message }), { status: 500 });

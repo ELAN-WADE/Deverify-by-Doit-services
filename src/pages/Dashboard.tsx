@@ -117,10 +117,10 @@ export default function Dashboard() {
           <ShieldCheck className="w-24 h-24 sm:w-32 sm:h-32 lg:w-48 lg:h-48 text-white opacity-20 lg:opacity-100 lg:text-slate-50 drop-shadow-lg" strokeWidth={2.5} />
         </div>
 
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
-          <div className="flex-1">
+        <div className="relative z-10 flex flex-col items-center text-center gap-6">
+          <div className="flex-1 flex flex-col items-center">
             <p 
-              className="text-sm lg:text-base text-indigo-100 mb-1 tracking-wide flex items-center min-h-[1.5rem]"
+              className="text-sm lg:text-base text-indigo-100 mb-2 tracking-wide flex items-center justify-center min-h-[1.5rem]"
               style={{ fontFamily: 'Roboto, sans-serif' }}
             >
               {typedText}
@@ -129,7 +129,7 @@ export default function Dashboard() {
             <h2 className="text-2xl lg:text-4xl font-bold text-white mb-8 leading-tight">
               Participants Dashboard
             </h2>
-            <div className="flex flex-row gap-2 sm:gap-4 max-w-xl">
+            <div className="flex flex-row justify-center gap-2 sm:gap-4 w-full max-w-xl">
               <button
                 onClick={() => navigate('/search')}
                 className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-3 py-2.5 sm:px-6 sm:py-2.5 rounded-xl font-semibold text-[11px] sm:text-sm transition-all duration-200 shadow-md shadow-black/10"
@@ -173,10 +173,10 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom grid: Recent + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* Recent Registrations — takes 3 cols */}
-        <div className="lg:col-span-3 bg-secondary rounded-2xl shadow-sm overflow-hidden text-white">
+        {/* Recent Registrations — perfectly balances screen */}
+        <div className="bg-secondary rounded-2xl shadow-sm overflow-hidden text-white">
           <div className="flex items-center justify-between px-5 py-4 border-b border-indigo-800/50">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-indigo-900 rounded-lg flex items-center justify-center">
@@ -236,8 +236,8 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Quick Actions — takes 2 cols */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        {/* Quick Actions — perfectly balances screen */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center">
