@@ -174,6 +174,12 @@ serve({
     let isAsset = reqPath.startsWith('/assets/');
     
     if (!(await f.exists())) {
+      // Do not fallback to index.html for missing assets!
+      // This prevents the dreaded "Unexpected token <" blank page crash when the PWA requests an old cached JS file.
+      if (reqPath.startsWith('/assets/') || reqPath.endsWith('.js') || reqPath.endsWith('.css')) {
+        return new Response('Not found', { status: 404 });
+      }
+
       // SPA Fallback: If file not found, serve index.html (React Router will handle the path)
       filePath = path.join(distPath, 'index.html');
       f = file(filePath);
