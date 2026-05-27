@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   LayoutDashboard,
@@ -9,7 +9,10 @@ import {
   Menu,
   ShieldCheck,
   ChevronRight,
+  CloudOff,
+  RefreshCw
 } from 'lucide-react';
+import { useParticipantStore } from '@/hooks/useParticipantStore';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -42,6 +45,19 @@ const AppLogo = () => (
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { offlineQueueCount } = useParticipantStore();
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-slate-50">
@@ -121,6 +137,18 @@ export default function Layout({ children }: LayoutProps) {
           </div>
 
           <div className="flex-1 min-w-0 hidden lg:block">
+          </div>
+
+          {/* Sync Indicator */}
+          <div className="flex items-center gap-3 ml-auto">
+            {(isOffline || offlineQueueCount > 0) && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-full text-xs font-semibold border border-amber-200 shadow-sm transition-all">
+                {isOffline ? <CloudOff className="w-4 h-4" /> : <RefreshCw className="w-4 h-4 animate-spin" />}
+                <span className="hidden sm:inline">
+                  {isOffline ? 'Offline Mode' : 'Syncing...'} ({offlineQueueCount})
+                </span>
+              </div>
+            )}
           </div>
         </header>
 

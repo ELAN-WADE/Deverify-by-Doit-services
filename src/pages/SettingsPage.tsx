@@ -14,6 +14,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -28,9 +29,20 @@ export default function SettingsPage() {
   const { participants, stats, resetData, clearData, importParticipants } = useParticipantStore();
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
   const [resetting, setResetting] = useState(false);
   const [message, setMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleResetDialogClose = (open: boolean) => {
+    setShowResetDialog(open);
+    if (!open) setConfirmText('');
+  };
+
+  const handleClearDialogClose = (open: boolean) => {
+    setShowClearDialog(open);
+    if (!open) setConfirmText('');
+  };
 
   const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -132,7 +144,7 @@ export default function SettingsPage() {
     await new Promise(r => setTimeout(r, 500));
     resetData();
     setResetting(false);
-    setShowResetDialog(false);
+    handleResetDialogClose(false);
     setMessage('Data reset to original records!');
     setTimeout(() => setMessage(''), 3000);
   };
@@ -142,7 +154,7 @@ export default function SettingsPage() {
     await new Promise(r => setTimeout(r, 500));
     clearData();
     setResetting(false);
-    setShowClearDialog(false);
+    handleClearDialogClose(false);
     setMessage('Database cleared successfully!');
     setTimeout(() => setMessage(''), 3000);
   };
@@ -196,7 +208,7 @@ export default function SettingsPage() {
             <HardDrive className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-blue-800">Persistent SQLite Database</p>
-              <p className="text-xs text-blue-600 mt-0.5">All data is permanently stored in a local SQLite file (`participants.db`). No internet required.</p>
+              <p className="text-xs text-blue-600 mt-0.5">All data is permanently stored in a local SQLite file (`participants.db`). Syncs locally when offline.</p>
             </div>
           </div>
         </div>
@@ -304,7 +316,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Reset Dialog */}
-      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+      <Dialog open={showResetDialog} onOpenChange={handleResetDialogClose}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -313,11 +325,25 @@ export default function SettingsPage() {
             </DialogTitle>
             <DialogDescription>
               This will restore all {stats.total.toLocaleString()} original participants. Any new registrations will be lost.
+              
+              <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                <p className="text-sm font-semibold text-orange-800 mb-2">Type "RESET" below to confirm:</p>
+                <Input
+                  value={confirmText}
+                  onChange={e => setConfirmText(e.target.value)}
+                  placeholder="RESET"
+                  className="bg-white border-orange-200 focus-visible:ring-orange-400"
+                />
+              </div>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowResetDialog(false)} className="rounded-xl">Cancel</Button>
-            <Button className="bg-orange-600 hover:bg-orange-700 gap-2 rounded-xl" onClick={handleReset} disabled={resetting}>
+            <Button variant="outline" onClick={() => handleResetDialogClose(false)} className="rounded-xl">Cancel</Button>
+            <Button 
+              className="bg-orange-600 hover:bg-orange-700 gap-2 rounded-xl" 
+              onClick={handleReset} 
+              disabled={resetting || confirmText !== 'RESET'}
+            >
               {resetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
               Reset Data
             </Button>
@@ -326,7 +352,7 @@ export default function SettingsPage() {
       </Dialog>
 
       {/* Clear Dialog */}
-      <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+      <Dialog open={showClearDialog} onOpenChange={handleClearDialogClose}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
@@ -334,13 +360,28 @@ export default function SettingsPage() {
               Clear All Data
             </DialogTitle>
             <DialogDescription>
-              This will permanently remove all participant data from your SQLite database. You'll need to use Reset Data to reload original data.
+              This will permanently remove all participant data from your SQLite database. This action cannot be undone.
+              
+              <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-100">
+                <p className="text-sm font-semibold text-red-800 mb-2">Type "DELETE" below to confirm:</p>
+                <Input
+                  value={confirmText}
+                  onChange={e => setConfirmText(e.target.value)}
+                  placeholder="DELETE"
+                  className="bg-white border-red-200 focus-visible:ring-red-400"
+                />
+              </div>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowClearDialog(false)} className="rounded-xl">Cancel</Button>
-            <Button variant="destructive" onClick={handleClear} className="gap-2 rounded-xl">
-              <Trash2 className="w-4 h-4" />
+            <Button variant="outline" onClick={() => handleClearDialogClose(false)} className="rounded-xl">Cancel</Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleClear} 
+              className="gap-2 rounded-xl"
+              disabled={resetting || confirmText !== 'DELETE'}
+            >
+              {resetting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               Clear All Data
             </Button>
           </DialogFooter>

@@ -29,7 +29,7 @@ export default function ParticipantsPage() {
   const navigate = useNavigate();
   const { filteredParticipants, searchQuery, setSearchQuery, deleteParticipant } = useParticipantStore();
   const [page, setPage] = useState(0);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | string | null>(null);
 
   const totalPages = Math.ceil(filteredParticipants.length / PAGE_SIZE);
   const paginated = filteredParticipants.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);

@@ -22,14 +22,15 @@ export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<typeof participants>([]);
   const [searched, setSearched] = useState(false);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | string | null>(null);
 
   const selectedParticipant = participants.find(p => p.id === selectedId);
 
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) {
-      setSelectedId(Number(id));
+      const numId = Number(id);
+      setSelectedId(isNaN(numId) ? id : numId);
       setSearchParams({});
     }
   }, [searchParams, setSearchParams]);
