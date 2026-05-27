@@ -35,7 +35,7 @@ async function main() {
     try {
       db = new Database(dbPath, { create: true });
       db.exec('PRAGMA journal_mode = WAL;');
-      db.exec('PRAGMA synchronous = NORMAL;');
+      db.exec('PRAGMA synchronous = FULL;');
       console.log('Database connected successfully.');
     } catch (e) {
       console.error('Failed to open database! This is likely a volume permission issue.', e);
