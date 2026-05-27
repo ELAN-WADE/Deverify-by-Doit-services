@@ -81,7 +81,7 @@ async function main() {
     const deleteParticipant = db.prepare('DELETE FROM participants WHERE id = $id');
     const clearAll = db.prepare('DELETE FROM participants');
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = parseInt(process.env.PORT || '3000', 10);
 
     // 4. Start Server
     console.log(`Starting server on port ${PORT}...`);
@@ -90,6 +90,11 @@ async function main() {
       hostname: '0.0.0.0',
       async fetch(req) {
         const url = new URL(req.url);
+        
+        // Explicit health check endpoint for Railway
+        if (url.pathname === '/health') {
+          return new Response('OK', { status: 200 });
+        }
 
         // --- API ROUTES ---
         if (url.pathname === '/api/participants') {
@@ -199,6 +204,15 @@ async function main() {
             filePath = path.join(distPath, 'index.html');
             f = file(filePath);
             isAsset = false;
+            
+            // CRITICAL: If index.html STILL does not exist, it means Nixpacks did not build the frontend.
+            // We MUST return a 200 OK so Railway doesn't mark the deployment as failed due to a 404.
+            if (!(await f.exists())) {
+              return new Response('<html><body><h1>Frontend not built! The dist folder is missing.</h1></body></html>', {
+                status: 200,
+                headers: { 'Content-Type': 'text/html' }
+              });
+            }
           }
 
           const headers = new Headers();
@@ -210,7 +224,11 @@ async function main() {
             headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
           }
 
-          return new Response(f, { headers });
+          // CRITICAL: Read the file into memory (arrayBuffer) before serving.
+          // This completely bypasses a known bug with Bun's `sendfile` system call
+          // on Docker/Railway that causes static assets to hang and take 2+ minutes to transfer!
+          const buffer = await f.arrayBuffer();
+          return new Response(buffer, { headers });
         } catch (e) {
           console.error('Static file error:', e);
           return new Response('Internal Server Error', { status: 500 });
