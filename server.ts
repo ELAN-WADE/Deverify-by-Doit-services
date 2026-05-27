@@ -224,6 +224,16 @@ async function main() {
             headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
           }
 
+          // Check if client accepts gzip
+          const acceptEncoding = req.headers.get('accept-encoding') || '';
+          if (acceptEncoding.includes('gzip') && (reqPath.endsWith('.js') || reqPath.endsWith('.css') || reqPath.endsWith('.html'))) {
+            const buffer = await f.arrayBuffer();
+            const compressed = Bun.gzip(buffer);
+            headers.set('Content-Encoding', 'gzip');
+            headers.set('Content-Length', compressed.length.toString());
+            return new Response(compressed, { headers });
+          }
+
           return new Response(f, { headers });
         } catch (e) {
           console.error('Static file error:', e);
