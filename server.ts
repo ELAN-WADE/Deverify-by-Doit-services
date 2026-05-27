@@ -4,7 +4,8 @@ import path from 'path';
 import fs from 'fs';
 
 // 1. Initialize SQLite Database
-const dbPath = path.resolve(process.cwd(), 'participants.db');
+const dbPath = process.env.DB_PATH || path.resolve(process.cwd(), 'participants.db');
+console.log(`Using database file at: ${dbPath}`);
 const db = new Database(dbPath, { create: true });
 
 db.exec(`
