@@ -55,6 +55,21 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('lucide-react')) return 'ui-icons';
+            if (id.includes('recharts')) return 'ui-charts';
+            if (id.includes('@radix-ui')) return 'ui-components';
+            if (id.includes('react')) return 'vendor-react';
+            return 'vendor';
+          }
+        }
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': {
