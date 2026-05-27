@@ -3,11 +3,13 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { inspectAttr } from 'kimi-plugin-inspect-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { sqlitePlugin } from './viteDbPlugin'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
   plugins: [
+    sqlitePlugin(),
     inspectAttr(),
     react(),
     VitePWA({

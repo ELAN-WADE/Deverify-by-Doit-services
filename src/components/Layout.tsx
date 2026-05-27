@@ -7,7 +7,6 @@ import {
   Users,
   Settings,
   Menu,
-  X,
   ShieldCheck,
   ChevronRight,
 } from 'lucide-react';
@@ -23,6 +22,22 @@ const navItems = [
   { path: '/participants', label: 'Participants', icon: Users },
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
+
+const AppLogo = () => (
+  <div className="flex items-center gap-1 flex-wrap">
+    <span className="font-bold text-sm text-slate-800 leading-tight">Deverify</span>
+    <span className="text-[9px] text-slate-400 font-medium pt-0.5">by</span>
+    <div className="flex items-end gap-[2px] text-secondary ml-0.5 opacity-90">
+      <div className="bg-secondary text-white px-1 py-[1.5px] rounded-[2px] transform -skew-x-[15deg] flex items-center justify-center">
+        <span className="font-black text-[7px] transform skew-x-[15deg] tracking-tighter leading-none">DOIT</span>
+      </div>
+      <div className="flex flex-col leading-none pb-[1px]">
+        <span className="font-extrabold text-[8px] tracking-tight leading-none">Services</span>
+        <span className="font-black text-[4px] text-right tracking-widest leading-none mt-[0.5px]">.NG</span>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,33 +63,21 @@ export default function Layout({ children }: LayoutProps) {
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        <div className="px-5 py-6 border-b border-slate-100 flex items-center shrink-0">
+        <div className="hidden lg:flex px-5 py-6 border-b border-slate-100 items-center shrink-0">
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-bold text-base text-slate-800 leading-tight">Deverify</span>
-              <span className="text-[11px] text-slate-500 font-medium pt-0.5">by</span>
-              <div className="flex items-end gap-[3px] text-secondary ml-0.5">
-                <div className="bg-secondary text-white px-1.5 py-[2px] rounded-[2px] transform -skew-x-[15deg] flex items-center justify-center">
-                  <span className="font-black text-[9px] transform skew-x-[15deg] tracking-tighter leading-none">DOIT</span>
-                </div>
-                <div className="flex flex-col leading-none pb-[1px]">
-                  <span className="font-extrabold text-[11px] tracking-tight leading-none">Services</span>
-                  <span className="font-black text-[5px] text-right tracking-widest leading-none mt-[1px]">.NG</span>
-                </div>
-              </div>
-            </div>
+            <AppLogo />
           </div>
-          <button
-            className="lg:hidden ml-auto text-slate-400 hover:text-secondary p-1 rounded-lg hover:bg-slate-50 transition-colors"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
         {/* Nav section label */}
-        <div className="px-5 pt-5 pb-2 shrink-0">
+        <div className="px-5 pt-5 pb-2 shrink-0 flex items-center justify-between mt-4 lg:mt-0">
           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Menu</p>
+          <button
+            className="lg:hidden text-xs font-bold text-slate-400 hover:text-secondary flex items-center gap-1.5 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+          >
+            Back <ChevronRight className="w-3 h-3" />
+          </button>
         </div>
 
         {/* Nav links */}
@@ -102,22 +105,29 @@ export default function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Top bar — sticky, glass effect */}
-        <header className="glass-bar border-b border-slate-200/80 px-4 lg:px-6 py-3.5 flex items-center gap-3 shrink-0 z-30">
+        <header className="glass-bar border-b border-slate-200/80 px-4 lg:px-6 py-3.5 flex items-center shrink-0 z-30 relative min-h-[60px]">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="lg:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors z-10"
           >
             <Menu className="w-5 h-5 text-slate-600" />
           </button>
 
-          <div className="flex-1 min-w-0">
+          {/* Centralized Logo on Mobile */}
+          <div className="lg:hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto">
+              <AppLogo />
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-0 hidden lg:block">
           </div>
         </header>
 
         {/* Scrollable page content */}
         <main className="flex-1 overflow-hidden relative">
           {/* Watermark */}
-          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.015]">
+          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.008]">
             <ShieldCheck className="w-[80vh] h-[80vh] text-slate-900" strokeWidth={3} />
           </div>
 

@@ -9,64 +9,29 @@ export interface Participant {
   registeredAt: string;
 }
 
-const STORAGE_KEY = 'dsgb_participants';
-const INITIALIZED_KEY = 'dsgb_initialized';
-
-function loadFromStorage(): Participant[] | null {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) return JSON.parse(data);
-  } catch { /* empty */ }
-  return null;
-}
-
-function saveToStorage(participants: Participant[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
-  } catch { /* empty */ }
-}
-
-function generateId(participants: Participant[]): number {
-  return participants.length > 0 ? Math.max(...participants.map(p => p.id)) + 1 : 1;
-}
-
 export function useParticipantStore() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [initialized, setInitialized] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'email' | 'phone'>('email');
 
-  // Initialize data from localStorage or fetch from JSON
-  useEffect(() => {
-    const stored = loadFromStorage();
-    const alreadyInit = localStorage.getItem(INITIALIZED_KEY);
-
-    if (stored && alreadyInit) {
-      setParticipants(stored);
+  const fetchParticipants = useCallback(async () => {
+    try {
+      const res = await fetch('/api/participants');
+      if (res.ok) {
+        const data = await res.json();
+        setParticipants(data);
+        setInitialized(true);
+      }
+    } catch (e) {
+      console.error('Failed to load participants:', e);
       setInitialized(true);
-    } else {
-      // Fetch the embedded JSON file using the correct base path
-      fetch(`${import.meta.env.BASE_URL}participants.json`)
-        .then(res => res.json())
-        .then((data: Participant[]) => {
-          setParticipants(data);
-          saveToStorage(data);
-          localStorage.setItem(INITIALIZED_KEY, 'true');
-          setInitialized(true);
-        })
-        .catch(() => {
-          setParticipants([]);
-          setInitialized(true);
-        });
     }
   }, []);
 
-  // Save to localStorage whenever participants change
   useEffect(() => {
-    if (initialized) {
-      saveToStorage(participants);
-    }
-  }, [participants, initialized]);
+    fetchParticipants();
+  }, [fetchParticipants]);
 
   const searchParticipants = useCallback((query: string): Participant[] => {
     if (!query.trim()) return [];
@@ -85,33 +50,82 @@ export function useParticipantStore() {
   }, [participants]);
 
   const addParticipant = useCallback((data: Omit<Participant, 'id' | 'registeredAt'>): Participant => {
-    const newParticipant: Participant = {
+    const newParticipant = {
       ...data,
-      id: generateId(participants),
       registeredAt: new Date().toISOString(),
     };
-    setParticipants(prev => [newParticipant, ...prev]);
-    return newParticipant;
-  }, [participants]);
+    
+    // Optimistic update without ID first, then fetch exact ID
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'add', data: newParticipant })
+    })
+    .then(res => res.json())
+    .then(resData => {
+      if (resData.id) {
+         setParticipants(prev => [{ ...newParticipant, id: resData.id } as Participant, ...prev]);
+      } else {
+         fetchParticipants();
+      }
+    });
+
+    return { ...newParticipant, id: Date.now() } as Participant; // temporary ID
+  }, [fetchParticipants]);
+
+  const importParticipants = useCallback((imported: Omit<Participant, 'id'>[]) => {
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'import', data: imported })
+    })
+    .then(() => {
+      fetchParticipants();
+    });
+  }, [fetchParticipants]);
 
   const updateParticipant = useCallback((id: number, updates: Partial<Omit<Participant, 'id'>>) => {
-    setParticipants(prev =>
-      prev.map(p => (p.id === id ? { ...p, ...updates } : p))
-    );
-  }, []);
+    const target = participants.find(p => p.id === id);
+    if (!target) return;
+    
+    const updated = { ...target, ...updates };
+    setParticipants(prev => prev.map(p => (p.id === id ? updated : p)));
+    
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', data: updated })
+    });
+  }, [participants]);
 
   const deleteParticipant = useCallback((id: number) => {
     setParticipants(prev => prev.filter(p => p.id !== id));
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', data: { id } })
+    });
   }, []);
 
+  const clearData = useCallback(() => {
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'clear' })
+    }).then(() => {
+      fetchParticipants();
+    });
+  }, [fetchParticipants]);
+
   const resetData = useCallback(() => {
-    fetch(`${import.meta.env.BASE_URL}participants.json`)
-      .then(res => res.json())
-      .then((data: Participant[]) => {
-        setParticipants(data);
-        saveToStorage(data);
-      });
-  }, []);
+    fetch('/api/participants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reset' })
+    }).then(() => {
+      fetchParticipants();
+    });
+  }, [fetchParticipants]);
 
   const filteredParticipants = searchQuery.trim()
     ? participants.filter(p => {
@@ -127,13 +141,11 @@ export function useParticipantStore() {
   // Stats
   const stats = {
     total: participants.length,
-    female: participants.filter(p => p.sex === 'F').length,
-    male: participants.filter(p => p.sex === 'M').length,
+    female: participants.filter(p => p.sex && p.sex.toUpperCase().trim().startsWith('F')).length,
+    male: participants.filter(p => p.sex && p.sex.toUpperCase().trim().startsWith('M')).length,
     withPhone: participants.filter(p => p.phone && p.phone !== '0').length,
     withEmail: participants.filter(p => p.email && p.email.length > 3).length,
-    recentRegistrations: [...participants]
-      .sort((a, b) => b.id - a.id)
-      .slice(0, 10),
+    recentRegistrations: [...participants].slice(0, 10),
   };
 
   return {
@@ -147,9 +159,11 @@ export function useParticipantStore() {
     searchParticipants,
     getParticipantById,
     addParticipant,
+    importParticipants,
     updateParticipant,
     deleteParticipant,
     resetData,
+    clearData,
     stats,
   };
 }

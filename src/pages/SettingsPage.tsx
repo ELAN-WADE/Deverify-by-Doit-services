@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Settings,
   Database,
   RotateCcw,
   Download,
+  Upload,
   Trash2,
   AlertTriangle,
   CheckCircle2,
@@ -21,14 +22,73 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useParticipantStore } from '@/hooks/useParticipantStore';
+import { useParticipantStore, type Participant } from '@/hooks/useParticipantStore';
 
 export default function SettingsPage() {
-  const { participants, stats, resetData } = useParticipantStore();
+  const { participants, stats, resetData, clearData, importParticipants } = useParticipantStore();
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [message, setMessage] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      if (lines.length <= 1) {
+         setMessage('CSV file is empty or missing headers');
+         return;
+      }
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+      
+      const imported: Omit<Participant, 'id'>[] = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        const p: any = {};
+        
+        headers.forEach((h, index) => {
+          let val = (values[index] || '').trim();
+          if (val.startsWith('"') && val.endsWith('"')) {
+             val = val.substring(1, val.length - 1).replace(/""/g, '"');
+          }
+          if (h.includes('name')) p.name = val;
+          if (h.includes('phone')) p.phone = val;
+          if (h.includes('email')) p.email = val;
+          if (h.includes('sex') || h.includes('gender')) p.sex = val;
+          if (h.includes('registered')) p.registeredAt = val;
+        });
+        
+        if (p.name) {
+           imported.push({
+             name: p.name,
+             phone: p.phone || '',
+             email: p.email || '',
+             sex: p.sex || 'M',
+             registeredAt: p.registeredAt || new Date().toISOString()
+           });
+        }
+      }
+      
+      if (imported.length > 0) {
+         importParticipants(imported);
+         setMessage(`Successfully imported ${imported.length} participants!`);
+         setTimeout(() => setMessage(''), 3000);
+      } else {
+         setMessage('No valid participants found in CSV.');
+         setTimeout(() => setMessage(''), 3000);
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) {
+       fileInputRef.current.value = '';
+    }
+  };
 
   const handleExportJSON = () => {
     const data = JSON.stringify(participants, null, 2);
@@ -66,6 +126,7 @@ export default function SettingsPage() {
     setTimeout(() => setMessage(''), 3000);
   };
 
+
   const handleReset = async () => {
     setResetting(true);
     await new Promise(r => setTimeout(r, 500));
@@ -76,11 +137,13 @@ export default function SettingsPage() {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleClear = () => {
-    localStorage.removeItem('dsgb_participants');
-    localStorage.removeItem('dsgb_initialized');
+  const handleClear = async () => {
+    setResetting(true);
+    await new Promise(r => setTimeout(r, 500));
+    clearData();
+    setResetting(false);
     setShowClearDialog(false);
-    setMessage('Local storage cleared! Refresh to reload.');
+    setMessage('Database cleared successfully!');
     setTimeout(() => setMessage(''), 3000);
   };
 
@@ -132,26 +195,45 @@ export default function SettingsPage() {
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
             <HardDrive className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-blue-800">Offline Storage Mode</p>
-              <p className="text-xs text-blue-600 mt-0.5">All data is stored in your browser's localStorage. No internet required.</p>
+              <p className="text-sm font-semibold text-blue-800">Persistent SQLite Database</p>
+              <p className="text-xs text-blue-600 mt-0.5">All data is permanently stored in a local SQLite file (`participants.db`). No internet required.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Export Data */}
+      {/* Import & Export Data */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
           <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
             <Download className="w-3.5 h-3.5 text-secondary" />
           </div>
-          <h3 className="font-bold text-slate-800 text-sm">Export Data</h3>
+          <h3 className="font-bold text-slate-800 text-sm">Import & Export Data</h3>
         </div>
         <div className="p-5">
           <p className="text-sm text-slate-500 mb-4">
-            Export all participant data for backup or external use.
+            Import participants from a CSV file, or export all data for backup.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input 
+              type="file" 
+              accept=".csv" 
+              ref={fileInputRef} 
+              className="hidden" 
+              onChange={handleImportCSV} 
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="action-btn group"
+            >
+              <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0">
+                <Upload className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-bold text-slate-800">Import CSV</p>
+                <p className="text-xs text-slate-400">Add from spreadsheet</p>
+              </div>
+            </button>
             <button
               onClick={handleExportCSV}
               className="action-btn group"
@@ -252,7 +334,7 @@ export default function SettingsPage() {
               Clear All Data
             </DialogTitle>
             <DialogDescription>
-              This will permanently remove all participant data from your browser's local storage. You'll need to refresh to reload original data.
+              This will permanently remove all participant data from your SQLite database. You'll need to use Reset Data to reload original data.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

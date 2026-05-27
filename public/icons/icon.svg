@@ -1,7 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="80" fill="#0f172a"/>
-  <path d="M256 80 L340 130 L340 250 Q340 340 256 400 Q172 340 172 250 L172 130 Z" fill="#10b981" opacity="0.2"/>
-  <path d="M256 100 L320 145 L320 245 Q320 320 256 375 Q192 320 192 245 L192 145 Z" fill="#10b981" opacity="0.5"/>
-  <path d="M256 120 L305 158 L305 242 Q305 305 256 352 Q207 305 207 242 L207 158 Z" fill="#10b981"/>
-  <polyline points="230,255 250,278 290,225" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect width="512" height="512" rx="100" fill="#4f46e5"/>
+  <text x="50%" y="55%" fill="white" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="160" text-anchor="middle" dominant-baseline="middle">DOIT</text>
 </svg>

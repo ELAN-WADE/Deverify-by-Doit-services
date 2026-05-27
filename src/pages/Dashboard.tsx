@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import {
   Users,
@@ -17,6 +18,40 @@ import { useParticipantStore } from '@/hooks/useParticipantStore';
 export default function Dashboard() {
   const navigate = useNavigate();
   const { stats } = useParticipantStore();
+
+  const [typedText, setTypedText] = useState('');
+  const fullText = "DOIT services, Young African Work and Ogun state";
+
+  useEffect(() => {
+    let typeInterval: any;
+    let pauseTimeout: any;
+
+    const startTyping = () => {
+      let currentText = '';
+      let i = 0;
+      setTypedText('');
+      
+      typeInterval = setInterval(() => {
+        if (i < fullText.length) {
+          currentText += fullText[i];
+          setTypedText(currentText);
+          i++;
+        } else {
+          clearInterval(typeInterval);
+          pauseTimeout = setTimeout(() => {
+            startTyping();
+          }, 5000);
+        }
+      }, 40);
+    };
+
+    startTyping();
+
+    return () => {
+      clearInterval(typeInterval);
+      clearTimeout(pauseTimeout);
+    };
+  }, []);
 
   const statCards = [
     {
@@ -78,31 +113,35 @@ export default function Dashboard() {
         <div className="absolute right-20 bottom-0 w-32 h-32 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
 
         {/* App Icon at right end */}
-        <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
-          <ShieldCheck className="w-48 h-48 text-white" strokeWidth={3} />
+        <div className="flex absolute right-4 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 pointer-events-none">
+          <ShieldCheck className="w-24 h-24 sm:w-32 sm:h-32 lg:w-48 lg:h-48 text-white opacity-20 lg:opacity-100 lg:text-slate-50 drop-shadow-lg" strokeWidth={2.5} />
         </div>
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="flex-1">
-            <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2">
-              Participant Attendance
-            </h2>
-            <p className="text-indigo-200 text-sm mb-8 max-w-lg font-medium">
-              Search, register, and manage training participants.
+            <p 
+              className="text-sm lg:text-base text-indigo-100 mb-1 tracking-wide flex items-center min-h-[1.5rem]"
+              style={{ fontFamily: 'Roboto, sans-serif' }}
+            >
+              {typedText}
+              <span className={`w-0.5 h-4 lg:h-5 bg-indigo-200 ml-1 rounded-full ${typedText.length === fullText.length ? 'animate-pulse' : 'opacity-100'}`} />
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
+            <h2 className="text-2xl lg:text-4xl font-bold text-white mb-8 leading-tight">
+              Participants Dashboard
+            </h2>
+            <div className="flex flex-row gap-2 sm:gap-4 max-w-xl">
               <button
                 onClick={() => navigate('/search')}
-                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md shadow-black/10"
+                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 bg-white border border-transparent text-secondary hover:bg-slate-50 px-3 py-2.5 sm:px-6 sm:py-2.5 rounded-xl font-semibold text-[11px] sm:text-sm transition-all duration-200 shadow-md shadow-black/10"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Lookup Participant
               </button>
               <button
                 onClick={() => navigate('/register')}
-                className="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 bg-secondary border border-white/30 hover:bg-indigo-800 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200"
+                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2.5 bg-secondary border border-white/30 hover:bg-indigo-800 text-white px-3 py-2.5 sm:px-6 sm:py-2.5 rounded-xl font-semibold text-[11px] sm:text-sm transition-all duration-200"
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Register New
               </button>
             </div>
