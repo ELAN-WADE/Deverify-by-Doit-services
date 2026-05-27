@@ -73,7 +73,6 @@ export function useParticipantStore() {
     setIsSyncing(true);
     let successCount = 0;
     let successIds = new Set<string>();
-    const newQueue = [...queue];
 
     toast.info('Syncing offline data to server...', { id: 'sync-toast' });
 
