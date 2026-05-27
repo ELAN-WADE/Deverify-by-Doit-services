@@ -6,8 +6,19 @@ import fs from 'fs';
 async function main() {
   try {
     // 1. Initialize SQLite Database
-    const dbPath = process.env.DB_PATH || path.resolve(process.cwd(), 'participants.db');
+    // Automatically detect Railway Volume if it exists, otherwise fallback to local/ephemeral disk
+    const railwayVolume = process.env.RAILWAY_VOLUME_MOUNT_PATH;
+    const defaultDbPath = railwayVolume 
+      ? path.join(railwayVolume, 'participants.db') 
+      : path.resolve(process.cwd(), 'participants.db');
+      
+    const dbPath = process.env.DB_PATH || defaultDbPath;
     console.log(`Using database file at: ${dbPath}`);
+    if (railwayVolume) {
+      console.log('✅ Railway Persistent Volume Detected! Data will be stored permanently.');
+    } else {
+      console.log('⚠️ WARNING: No Railway Volume detected. Data may be lost on redeploy. Please add a Volume in Railway dashboard!');
+    }
 
     // Ensure the directory exists before creating the database
     const dbDir = path.dirname(dbPath);
