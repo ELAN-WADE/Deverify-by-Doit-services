@@ -224,11 +224,7 @@ async function main() {
             headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
           }
 
-          // CRITICAL: Read the file into memory (arrayBuffer) before serving.
-          // This completely bypasses a known bug with Bun's `sendfile` system call
-          // on Docker/Railway that causes static assets to hang and take 2+ minutes to transfer!
-          const buffer = await f.arrayBuffer();
-          return new Response(buffer, { headers });
+          return new Response(f, { headers });
         } catch (e) {
           console.error('Static file error:', e);
           return new Response('Internal Server Error', { status: 500 });
