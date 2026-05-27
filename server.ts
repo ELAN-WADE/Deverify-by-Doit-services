@@ -81,7 +81,7 @@ async function main() {
     const deleteParticipant = db.prepare('DELETE FROM participants WHERE id = $id');
     const clearAll = db.prepare('DELETE FROM participants');
 
-    const PORT = parseInt(process.env.PORT || '3000', 10);
+    const PORT = parseInt(process.env.PORT || '8080', 10);
 
     // 4. Start Server
     console.log(`Starting server on port ${PORT}...`);

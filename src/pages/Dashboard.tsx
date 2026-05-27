@@ -20,7 +20,7 @@ export default function Dashboard() {
   const { stats } = useParticipantStore();
 
   const [typedText, setTypedText] = useState('');
-  const fullText = "DOIT services, Young African Work and Ogun state";
+  const fullText = "DOIT Services, Young African Work and Ogun state";
 
   useEffect(() => {
     let typeInterval: any;

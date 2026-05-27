@@ -1,20 +1,18 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
-import { inspectAttr } from 'kimi-plugin-inspect-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
   plugins: [
-    inspectAttr(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg', 'icons/icon-base.png', 'participants.json'],
       manifest: {
-        name: 'Deverify by DOit serivices',
+        name: 'Deverify by DOIT Services',
         short_name: 'Deverify',
         description: 'Offline participant verification and attendance management system.',
         theme_color: '#10b981',
@@ -59,7 +57,10 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000'
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     }
   },
   resolve: {
