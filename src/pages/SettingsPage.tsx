@@ -77,13 +77,22 @@ export default function SettingsPage() {
         });
         
         if (p.name) {
-           imported.push({
-             name: p.name,
-             phone: p.phone || '',
-             email: p.email || '',
-             sex: p.sex || 'M',
-             registeredAt: p.registeredAt || new Date().toISOString()
-           });
+           // Basic sanitization
+           const cleanName = String(p.name).replace(/[<>]/g, '').trim();
+           const cleanPhone = String(p.phone || '').replace(/[^\d+()\s-]/g, '').trim();
+           const cleanEmail = String(p.email || '').toLowerCase().trim();
+           let cleanSex = String(p.sex || 'M').toUpperCase().trim().charAt(0);
+           if (cleanSex !== 'M' && cleanSex !== 'F') cleanSex = 'M';
+
+           if (cleanName.length > 0) {
+             imported.push({
+               name: cleanName,
+               phone: cleanPhone,
+               email: cleanEmail,
+               sex: cleanSex,
+               registeredAt: p.registeredAt || new Date().toISOString()
+             });
+           }
         }
       }
       

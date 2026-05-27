@@ -72,6 +72,7 @@ export function useParticipantStore() {
 
     setIsSyncing(true);
     let successCount = 0;
+    let successIds = new Set<string>();
     const newQueue = [...queue];
 
     toast.info('Syncing offline data to server...', { id: 'sync-toast' });
@@ -85,7 +86,7 @@ export function useParticipantStore() {
         });
         if (res.ok) {
           successCount++;
-          newQueue.shift(); // Remove successful action
+          successIds.add(action.id);
         } else {
           break; // Server error, stop syncing
         }
@@ -94,9 +95,10 @@ export function useParticipantStore() {
       }
     }
 
-    // Save remaining queue
-    localStorage.setItem('offline_queue', JSON.stringify(newQueue));
-    setOfflineQueueCount(newQueue.length);
+    // Filter out successful actions cleanly without index shifting bugs
+    const remainingQueue = queue.filter(a => !successIds.has(a.id));
+    localStorage.setItem('offline_queue', JSON.stringify(remainingQueue));
+    setOfflineQueueCount(remainingQueue.length);
     setIsSyncing(false);
 
     if (successCount > 0) {
@@ -116,7 +118,7 @@ export function useParticipantStore() {
   useEffect(() => {
     fetchParticipants();
     syncQueue();
-  }, [fetchParticipants, syncQueue]);
+  }, []); // Run ONCE on mount to prevent infinite loops
 
 
   // ----------------------------------------------------

@@ -5,18 +5,21 @@ import SearchPage from './pages/SearchPage';
 import RegisterPage from './pages/RegisterPage';
 import ParticipantsPage from './pages/ParticipantsPage';
 import SettingsPage from './pages/SettingsPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/participants" element={<ParticipantsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<Dashboard />} />
-      </Routes>
-    </Layout>
+    <ErrorBoundary>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/participants" element={<ParticipantsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Dashboard />} />
+        </Routes>
+      </Layout>
+    </ErrorBoundary>
   );
 }
