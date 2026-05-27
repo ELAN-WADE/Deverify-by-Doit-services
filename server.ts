@@ -6,6 +6,14 @@ import fs from 'fs';
 // 1. Initialize SQLite Database
 const dbPath = process.env.DB_PATH || path.resolve(process.cwd(), 'participants.db');
 console.log(`Using database file at: ${dbPath}`);
+
+// Ensure the directory exists before creating the database
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+  console.log(`Created directory for database: ${dbDir}`);
+}
+
 const db = new Database(dbPath, { create: true });
 
 db.exec(`
