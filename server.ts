@@ -24,6 +24,7 @@ async function main() {
     try {
       db = new Database(dbPath, { create: true });
       db.exec('PRAGMA journal_mode = WAL;');
+      db.exec('PRAGMA synchronous = NORMAL;');
       console.log('Database connected successfully.');
     } catch (e) {
       console.error('Failed to open database! This is likely a volume permission issue.', e);
@@ -32,6 +33,15 @@ async function main() {
       db = new Database(':memory:');
       db.exec('PRAGMA journal_mode = WAL;');
     }
+
+    // Graceful shutdown to ensure data is permanently written to disk during redeploys
+    const shutdown = () => {
+      console.log('Shutting down gracefully, closing database...');
+      try { db.close(); } catch (err) { }
+      process.exit(0);
+    };
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
 
     db.exec(`
       CREATE TABLE IF NOT EXISTS participants (
