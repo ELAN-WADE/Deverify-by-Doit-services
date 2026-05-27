@@ -171,13 +171,26 @@ serve({
     // First try to serve the exact file
     let filePath = path.join(distPath, reqPath);
     let f = file(filePath);
+    let isAsset = reqPath.startsWith('/assets/');
     
     if (!(await f.exists())) {
       // SPA Fallback: If file not found, serve index.html (React Router will handle the path)
       filePath = path.join(distPath, 'index.html');
       f = file(filePath);
+      isAsset = false;
     }
 
-    return new Response(f);
+    const headers = new Headers();
+    headers.set('Content-Type', f.type);
+
+    // Aggressively cache Vite assets (they have hashes in filename)
+    if (isAsset) {
+      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else {
+      // Never cache index.html, sw.js, or manifest to ensure updates are instant
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    return new Response(f, { headers });
   },
 });
