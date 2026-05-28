@@ -45,7 +45,6 @@ export function useParticipantStore() {
     queue.push(action);
     localStorage.setItem('offline_queue', JSON.stringify(queue));
     setOfflineQueueCount(queue.length);
-    toast.error('You are offline. Saved to device and will sync later.', { id: 'offline-toast' });
   };
 
   // 2. Fetch from Live Database
@@ -78,9 +77,14 @@ export function useParticipantStore() {
 
     for (const action of queue) {
       try {
+        const reqHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (action.type === 'clear' || action.type === 'reset') {
+          reqHeaders['x-api-key'] = 'doitservices2026';
+        }
+
         const res = await fetch('/api/participants', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: reqHeaders,
           body: JSON.stringify({ action: action.type, data: action.payload })
         });
         
@@ -161,47 +165,39 @@ export function useParticipantStore() {
     // Optimistic UI Update & Cache
     saveCache([newParticipant as Participant, ...participants]);
 
-    // Attempt Network Save
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'add', data: newParticipant })
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('Server error');
-      return res.json();
-    })
-    .then(() => fetchParticipants())
-    .catch(() => {
-      // Offline fallback
-      enqueueAction({
-        id: newId,
-        type: 'add',
-        payload: newParticipant,
-        timestamp: Date.now()
-      });
+    // Strict Offline-First: Always enqueue first
+    enqueueAction({
+      id: newId,
+      type: 'add',
+      payload: newParticipant,
+      timestamp: Date.now()
     });
+
+    if (!navigator.onLine) {
+      toast.info('Saved locally. Will sync when online.', { id: 'offline-saved' });
+    }
+
+    // Trigger background sync
+    syncQueue();
 
     return newParticipant as Participant;
-  }, [participants, fetchParticipants]);
+  }, [participants, syncQueue]);
 
   const importParticipants = useCallback((imported: Omit<Participant, 'id'>[]) => {
-    // Attempt Network Save
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'import', data: imported })
-    })
-    .then(() => fetchParticipants())
-    .catch(() => {
-      enqueueAction({
-        id: `import_${Date.now()}`,
-        type: 'import',
-        payload: imported,
-        timestamp: Date.now()
-      });
+    // Strict Offline-First
+    enqueueAction({
+      id: `import_${Date.now()}`,
+      type: 'import',
+      payload: imported,
+      timestamp: Date.now()
     });
-  }, [fetchParticipants]);
+
+    if (!navigator.onLine) {
+      toast.info('Import saved locally. Will sync when online.', { id: 'offline-saved' });
+    }
+
+    syncQueue();
+  }, [syncQueue]);
 
   const updateParticipant = useCallback((id: number | string, updates: Partial<Omit<Participant, 'id'>>) => {
     const target = participants.find(p => p.id === id);
@@ -213,77 +209,57 @@ export function useParticipantStore() {
     const newParticipants = participants.map(p => (p.id === id ? updated : p));
     saveCache(newParticipants);
     
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'update', data: updated })
-    }).catch(() => {
-      enqueueAction({
-        id: `update_${id}_${Date.now()}`,
-        type: 'update',
-        payload: updated,
-        timestamp: Date.now()
-      });
+    // Strict Offline-First
+    enqueueAction({
+      id: `update_${id}_${Date.now()}`,
+      type: 'update',
+      payload: updated,
+      timestamp: Date.now()
     });
-  }, [participants]);
+
+    syncQueue();
+  }, [participants, syncQueue]);
 
   const deleteParticipant = useCallback((id: number | string) => {
     // Optimistic UI Update
     const newParticipants = participants.filter(p => p.id !== id);
     saveCache(newParticipants);
 
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'delete', data: { id } })
-    }).catch(() => {
-      enqueueAction({
-        id: `delete_${id}_${Date.now()}`,
-        type: 'delete',
-        payload: { id },
-        timestamp: Date.now()
-      });
+    // Strict Offline-First
+    enqueueAction({
+      id: `delete_${id}_${Date.now()}`,
+      type: 'delete',
+      payload: { id },
+      timestamp: Date.now()
     });
-  }, [participants]);
+
+    syncQueue();
+  }, [participants, syncQueue]);
 
   const clearData = useCallback(() => {
     saveCache([]);
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'x-api-key': 'doitservices2026'
-      },
-      body: JSON.stringify({ action: 'clear' })
-    }).catch(() => {
-      enqueueAction({
-        id: `clear_${Date.now()}`,
-        type: 'clear',
-        payload: null,
-        timestamp: Date.now()
-      });
+    // Strict Offline-First
+    enqueueAction({
+      id: `clear_${Date.now()}`,
+      type: 'clear',
+      payload: null,
+      timestamp: Date.now()
     });
-  }, []);
+
+    syncQueue();
+  }, [syncQueue]);
 
   const resetData = useCallback(() => {
-    fetch('/api/participants', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'x-api-key': 'doitservices2026'
-      },
-      body: JSON.stringify({ action: 'reset' })
-    })
-    .then(() => fetchParticipants())
-    .catch(() => {
-      enqueueAction({
-        id: `reset_${Date.now()}`,
-        type: 'reset',
-        payload: null,
-        timestamp: Date.now()
-      });
+    // Strict Offline-First
+    enqueueAction({
+      id: `reset_${Date.now()}`,
+      type: 'reset',
+      payload: null,
+      timestamp: Date.now()
     });
-  }, [fetchParticipants]);
+
+    syncQueue();
+  }, [syncQueue]);
 
   const filteredParticipants = searchQuery.trim()
     ? participants.filter(p => {
