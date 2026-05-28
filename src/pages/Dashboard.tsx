@@ -12,8 +12,10 @@ import {
   Clock,
   CheckCircle2,
   ShieldCheck,
+  Download,
 } from 'lucide-react';
 import { useParticipantStore } from '@/hooks/useParticipantStore';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -21,6 +23,29 @@ export default function Dashboard() {
 
   const [typedText, setTypedText] = useState('');
   const fullText = "DOIT Services NG, Young African Work and Ogun state Participants Verfication Platform.";
+
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      toast.info("To install on Android: Tap the 3 dots in Chrome (⋮) and select 'Add to Home screen' or 'Install App'.", { duration: 6000 });
+    }
+  };
 
   useEffect(() => {
     let typeInterval: any;
@@ -99,8 +124,16 @@ export default function Dashboard() {
       icon: Users,
       iconBg: 'bg-violet-100',
       iconColor: 'text-violet-600',
-      path: '/participants',
+      action: () => navigate('/participants'),
     },
+    {
+      label: 'Install App (Android/PC)',
+      description: 'Download for offline use',
+      icon: Download,
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-600',
+      action: handleInstallClick,
+    }
   ];
 
   return (
@@ -252,7 +285,7 @@ export default function Dashboard() {
               return (
                 <button
                   key={i}
-                  onClick={() => navigate(action.path)}
+                  onClick={action.action}
                   className="action-btn"
                 >
                   <div className={`w-9 h-9 ${action.iconBg} rounded-xl flex items-center justify-center shrink-0`}>
