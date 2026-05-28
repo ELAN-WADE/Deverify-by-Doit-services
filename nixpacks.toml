@@ -1,0 +1,5 @@
+
+
+[start]
+cmd = "bun run server.ts"
+user = "root"
