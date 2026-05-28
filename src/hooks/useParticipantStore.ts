@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
 export interface Participant {
-  id: number | string;
+  id: string;
   name: string;
   phone: string;
   email: string;
@@ -83,11 +83,21 @@ export function useParticipantStore() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: action.type, data: action.payload })
         });
-        if (res.ok) {
+        
+        // If 200 OK or 409 Conflict (Duplicate), we consider it "processed" so it doesn't get stuck forever
+        if (res.ok || res.status === 409) {
           successCount++;
           successIds.add(action.id);
+        } else if (res.status === 500) {
+          // If the server throws a 500 (e.g. UNIQUE constraint failed), we should still remove it from the queue so it doesn't block forever
+          const errorData = await res.json().catch(() => ({}));
+          if (errorData.error && errorData.error.includes('UNIQUE constraint failed')) {
+            successIds.add(action.id);
+          } else {
+             break; // Unknown Server error, stop syncing
+          }
         } else {
-          break; // Server error, stop syncing
+          break; // Other Server error, stop syncing
         }
       } catch (e) {
         break; // Network error, stop syncing
@@ -141,10 +151,10 @@ export function useParticipantStore() {
   }, [participants]);
 
   const addParticipant = useCallback((data: Omit<Participant, 'id' | 'registeredAt'>) => {
-    const tempId = `temp_${Date.now()}`;
+    const newId = crypto.randomUUID();
     const newParticipant = {
       ...data,
-      id: tempId,
+      id: newId,
       registeredAt: new Date().toISOString(),
     };
     
@@ -165,7 +175,7 @@ export function useParticipantStore() {
     .catch(() => {
       // Offline fallback
       enqueueAction({
-        id: tempId,
+        id: newId,
         type: 'add',
         payload: newParticipant,
         timestamp: Date.now()
@@ -240,7 +250,10 @@ export function useParticipantStore() {
     saveCache([]);
     fetch('/api/participants', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': 'doitservices2026'
+      },
       body: JSON.stringify({ action: 'clear' })
     }).catch(() => {
       enqueueAction({
@@ -255,7 +268,10 @@ export function useParticipantStore() {
   const resetData = useCallback(() => {
     fetch('/api/participants', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': 'doitservices2026'
+      },
       body: JSON.stringify({ action: 'reset' })
     })
     .then(() => fetchParticipants())

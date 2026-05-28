@@ -56,7 +56,7 @@ async function main() {
 
     db.exec(`
       CREATE TABLE IF NOT EXISTS participants (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         phone TEXT,
         email TEXT,
@@ -64,6 +64,27 @@ async function main() {
         registeredAt TEXT
       )
     `);
+
+    // Migration: Check if id is INTEGER and migrate to TEXT
+    const tableInfo = db.prepare("PRAGMA table_info(participants)").all() as any[];
+    const idCol = tableInfo.find(c => c.name === 'id');
+    if (idCol && idCol.type === 'INTEGER') {
+      console.log('Migrating database schema from INTEGER to TEXT (UUIDs)...');
+      db.exec(`
+        CREATE TABLE participants_new (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          phone TEXT,
+          email TEXT,
+          sex TEXT,
+          registeredAt TEXT
+        )
+      `);
+      db.exec(`INSERT INTO participants_new SELECT CAST(id AS TEXT), name, phone, email, sex, registeredAt FROM participants`);
+      db.exec(`DROP TABLE participants`);
+      db.exec(`ALTER TABLE participants_new RENAME TO participants`);
+      console.log('Migration successful.');
+    }
 
     // 2. Sync existing data from JSON if DB is empty
     const countStmt = db.prepare('SELECT COUNT(*) as count FROM participants');
@@ -95,8 +116,8 @@ async function main() {
     }
 
     // 3. Prepared Statements
-    const getParticipants = db.prepare('SELECT * FROM participants ORDER BY id DESC');
-    const insertParticipant = db.prepare('INSERT INTO participants (name, phone, email, sex, registeredAt) VALUES ($name, $phone, $email, $sex, $registeredAt)');
+    const getParticipants = db.prepare('SELECT * FROM participants ORDER BY registeredAt DESC');
+    const insertParticipant = db.prepare('INSERT INTO participants (id, name, phone, email, sex, registeredAt) VALUES ($id, $name, $phone, $email, $sex, $registeredAt)');
     const updateParticipant = db.prepare('UPDATE participants SET name = $name, phone = $phone, email = $email, sex = $sex, registeredAt = $registeredAt WHERE id = $id');
     const deleteParticipant = db.prepare('DELETE FROM participants WHERE id = $id');
     const clearAll = db.prepare('DELETE FROM participants');
@@ -141,14 +162,15 @@ async function main() {
               const { action, data } = payload;
 
               if (action === 'add') {
-                const info = insertParticipant.run({
+                insertParticipant.run({
+                  $id: data.id,
                   $name: data.name || 'Unknown',
                   $phone: data.phone || '',
                   $email: data.email || '',
                   $sex: data.sex || '',
                   $registeredAt: data.registeredAt || new Date().toISOString()
                 });
-                return new Response(JSON.stringify({ id: info.lastInsertRowid }), { headers: { 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ id: data.id }), { headers: { 'Content-Type': 'application/json' } });
               } else if (action === 'update') {
                 updateParticipant.run({
                   $id: data.id,
@@ -166,6 +188,7 @@ async function main() {
                 const insertMany = db.transaction((participants: any[]) => {
                   for (const p of participants) {
                     insertParticipant.run({
+                      $id: p.id || crypto.randomUUID(),
                       $name: p.name || 'Unknown',
                       $phone: p.phone || '',
                       $email: p.email || '',
@@ -177,9 +200,13 @@ async function main() {
                 insertMany(data);
                 return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
               } else if (action === 'clear') {
+                const token = req.headers.get('x-api-key');
+                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
                 clearAll.run();
                 return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
               } else if (action === 'reset') {
+                const token = req.headers.get('x-api-key');
+                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
                 clearAll.run();
                 try {
                   const jsonPath = path.resolve(process.cwd(), 'public/participants.json');
@@ -188,6 +215,7 @@ async function main() {
                     const insertMany = db.transaction((participants: any[]) => {
                       for (const p of participants) {
                         insertParticipant.run({
+                          $id: p.id ? String(p.id) : crypto.randomUUID(),
                           $name: p.name || 'Unknown',
                           $phone: p.phone || '',
                           $email: p.email || '',
