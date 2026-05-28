@@ -81,7 +81,7 @@ export default function SearchPage() {
               </div>
               <div className="inline-flex items-center gap-1.5 bg-secondary/20 border border-indigo-400/30 rounded-full px-3 py-1 mb-3">
                 <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
-                <span className="text-indigo-400 text-xs font-semibold">Training Verified</span>
+                <span className="text-indigo-400 text-xs font-semibold">Training Data-Exist</span>
               </div>
               <h2 className="text-2xl font-extrabold text-white">{selectedParticipant.name}</h2>
               <p className="text-slate-400 text-sm mt-1">Participant ID: #{selectedParticipant.id}</p>
@@ -123,7 +123,7 @@ export default function SearchPage() {
               </div>
               <p className="font-bold text-secondary flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4" />
-                Completed Training — Verified ✓
+                Completed Training — Data-Exist ✓
               </p>
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function SearchPage() {
                     </div>
                     <span className="badge-success shrink-0">
                       <CheckCircle2 className="w-3 h-3" />
-                      Verified
+                      Data-Exist
                     </span>
                   </div>
                 ))}

@@ -212,7 +212,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-indigo-900/60 text-indigo-200 border border-indigo-700">
                       <CheckCircle2 className="w-3 h-3" />
-                      Verified
+                      Data-Exist
                     </span>
                     <ArrowRight className="w-3.5 h-3.5 text-indigo-400/50" />
                   </div>
