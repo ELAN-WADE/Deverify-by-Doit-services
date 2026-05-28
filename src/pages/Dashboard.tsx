@@ -20,7 +20,7 @@ export default function Dashboard() {
   const { stats } = useParticipantStore();
 
   const [typedText, setTypedText] = useState('');
-  const fullText = "DOIT Services, Young African Work and Ogun state";
+  const fullText = "DOIT Services NG, Young African Work and Ogun state Participants Verfication Platform.";
 
   useEffect(() => {
     let typeInterval: any;
@@ -127,7 +127,7 @@ export default function Dashboard() {
               <span className={`w-0.5 h-4 lg:h-5 bg-indigo-200 ml-1 rounded-full ${typedText.length === fullText.length ? 'animate-pulse' : 'opacity-100'}`} />
             </p>
             <h2 className="text-2xl lg:text-4xl font-bold text-white mb-8 leading-tight">
-              Participants Dashboard
+              Participants Eligibility Verification Dashboard
             </h2>
             <div className="flex flex-row gap-2 sm:gap-4 max-w-xl">
               <button
