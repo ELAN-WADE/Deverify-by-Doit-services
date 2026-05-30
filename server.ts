@@ -137,6 +137,16 @@ async function main() {
           return new Response('OK', { status: 200 });
         }
 
+        const corsHeaders = {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, x-api-key'
+        };
+
+        if (req.method === 'OPTIONS') {
+          return new Response(null, { status: 204, headers: corsHeaders });
+        }
+
         // --- API ROUTES ---
         if (url.pathname === '/api/participants') {
           // Handle GET
@@ -146,7 +156,8 @@ async function main() {
               return new Response(JSON.stringify(data), {
                 headers: { 
                   'Content-Type': 'application/json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate'
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  ...corsHeaders
                 },
               });
             } catch (e: any) {
@@ -170,7 +181,7 @@ async function main() {
                   $sex: data.sex || '',
                   $registeredAt: data.registeredAt || new Date().toISOString()
                 });
-                return new Response(JSON.stringify({ id: data.id }), { headers: { 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ id: data.id }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
               } else if (action === 'update') {
                 updateParticipant.run({
                   $id: data.id,
@@ -198,15 +209,15 @@ async function main() {
                   }
                 });
                 insertMany(data);
-                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
               } else if (action === 'clear') {
                 const token = req.headers.get('x-api-key');
-                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
                 clearAll.run();
-                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
               } else if (action === 'reset') {
                 const token = req.headers.get('x-api-key');
-                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+                if (token !== 'doitservices2026') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
                 clearAll.run();
                 try {
                   const jsonPath = path.resolve(process.cwd(), 'public/participants.json');
@@ -229,12 +240,12 @@ async function main() {
                 } catch(e) {
                   console.error('Reset error:', e);
                 }
-                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
               } else {
-                return new Response(JSON.stringify({ error: 'Unknown action' }), { status: 400 });
+                return new Response(JSON.stringify({ error: 'Unknown action' }), { status: 400, headers: corsHeaders });
               }
             } catch (e: any) {
-              return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+              return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
             }
           }
         }

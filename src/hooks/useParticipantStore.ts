@@ -17,6 +17,8 @@ interface OfflineAction {
   timestamp: number;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export function useParticipantStore() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [initialized, setInitialized] = useState(false);
@@ -50,7 +52,7 @@ export function useParticipantStore() {
   // 2. Fetch from Live Database
   const fetchParticipants = useCallback(async () => {
     try {
-      const res = await fetch(`/api/participants?t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`${API_BASE_URL}/api/participants?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         saveCache(data); // update cache
@@ -82,7 +84,7 @@ export function useParticipantStore() {
           reqHeaders['x-api-key'] = 'doitservices2026';
         }
 
-        const res = await fetch('/api/participants', {
+        const res = await fetch(`${API_BASE_URL}/api/participants`, {
           method: 'POST',
           headers: reqHeaders,
           body: JSON.stringify({ action: action.type, data: action.payload })
