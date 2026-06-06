@@ -36,12 +36,13 @@ export default function ParticipantsPage() {
 
   const handleExport = () => {
     const csv = [
-      ['ID', 'Name', 'Phone', 'Email', 'Sex', 'Registered At'].join(','),
+      ['ID', 'Name', 'Phone', 'Email', 'School/Location', 'Sex', 'Registered At'].join(','),
       ...filteredParticipants.map(p => [
         p.id,
         `"${p.name}"`,
         p.phone,
-        `"${p.email}"`,
+        `"${p.email || ''}"`,
+        `"${p.school || ''}"`,
         p.sex,
         p.registeredAt,
       ].join(','))

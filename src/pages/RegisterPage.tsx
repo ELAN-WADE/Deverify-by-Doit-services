@@ -10,6 +10,7 @@ import {
   Loader2,
   ArrowRight,
   Search,
+  GraduationCap,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import { useParticipantStore } from '@/hooks/useParticipantStore';
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { addParticipant, participants } = useParticipantStore();
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', sex: 'F' });
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', sex: 'F', school: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
   const [registeredParticipant, setRegisteredParticipant] = useState<typeof participants[0] | null>(null);
@@ -48,6 +49,7 @@ export default function RegisterPage() {
       phone: formData.phone.trim(),
       email: formData.email.trim(),
       sex: formData.sex,
+      school: formData.school.trim(),
     });
     setRegisteredParticipant(participant);
     setSuccess(true);
@@ -55,7 +57,7 @@ export default function RegisterPage() {
   };
 
   const handleReset = () => {
-    setFormData({ name: '', phone: '', email: '', sex: 'F' });
+    setFormData({ name: '', phone: '', email: '', sex: 'F', school: '' });
     setErrors({});
     setSuccess(false);
     setRegisteredParticipant(null);
@@ -79,6 +81,7 @@ export default function RegisterPage() {
               { label: 'Full Name', value: registeredParticipant.name },
               { label: 'Phone', value: registeredParticipant.phone },
               ...(registeredParticipant.email ? [{ label: 'Email', value: registeredParticipant.email }] : []),
+              ...(registeredParticipant.school ? [{ label: 'School/Location', value: registeredParticipant.school }] : []),
               { label: 'Participant ID', value: `#${registeredParticipant.id}` },
             ].map(({ label, value }) => (
               <div key={label} className="flex justify-between items-center py-2.5 border-b border-slate-100 last:border-0">
@@ -178,6 +181,21 @@ export default function RegisterPage() {
               <AlertCircle className="w-3 h-3 shrink-0" />{errors.email}
             </p>
           )}
+        </div>
+
+        {/* School/Location */}
+        <div className="space-y-1.5">
+          <Label htmlFor="school" className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
+            <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
+            School Name / Location <span className="text-slate-300 font-normal normal-case tracking-normal">(optional)</span>
+          </Label>
+          <Input
+            id="school"
+            placeholder="e.g. University of Lagos or Ikeja"
+            value={formData.school}
+            onChange={e => setFormData(prev => ({ ...prev, school: e.target.value }))}
+            className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:border-indigo-400 focus:bg-white transition-colors"
+          />
         </div>
 
         {/* Gender */}

@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   AlertCircle,
   ShieldCheck,
+  MapPin,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -114,6 +115,14 @@ export default function SearchPage() {
                 Email Address
               </div>
               <p className="font-bold text-slate-800 text-base break-all">{selectedParticipant.email || 'Not provided'}</p>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 sm:col-span-2">
+              <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase mb-2">
+                <MapPin className="w-3.5 h-3.5" />
+                School / Location
+              </div>
+              <p className="font-bold text-slate-800 text-base break-all">{selectedParticipant.school || 'Not provided'}</p>
             </div>
 
             <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100 sm:col-span-2">

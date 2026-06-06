@@ -8,6 +8,7 @@ export interface Participant {
   email: string;
   sex: string;
   registeredAt: string;
+  school?: string;
 }
 
 interface OfflineAction {

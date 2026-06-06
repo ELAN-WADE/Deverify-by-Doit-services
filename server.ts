@@ -61,9 +61,23 @@ async function main() {
         phone TEXT,
         email TEXT,
         sex TEXT,
-        registeredAt TEXT
+        registeredAt TEXT,
+        school TEXT
       )
     `);
+
+    // Migration: Add school column if it doesn't exist
+    const currentTableInfo = db.prepare("PRAGMA table_info(participants)").all() as any[];
+    const hasSchoolCol = currentTableInfo.find(c => c.name === 'school');
+    if (!hasSchoolCol) {
+      console.log('Migrating database: adding school column...');
+      try {
+        db.exec(`ALTER TABLE participants ADD COLUMN school TEXT DEFAULT '';`);
+        console.log('School column added successfully.');
+      } catch (e) {
+        console.error('Failed to add school column:', e);
+      }
+    }
 
     // Migration: Check if id is INTEGER and migrate to TEXT
     const tableInfo = db.prepare("PRAGMA table_info(participants)").all() as any[];
@@ -77,10 +91,11 @@ async function main() {
           phone TEXT,
           email TEXT,
           sex TEXT,
-          registeredAt TEXT
+          registeredAt TEXT,
+          school TEXT
         )
       `);
-      db.exec(`INSERT INTO participants_new SELECT CAST(id AS TEXT), name, phone, email, sex, registeredAt FROM participants`);
+      db.exec(`INSERT INTO participants_new (id, name, phone, email, sex, registeredAt, school) SELECT CAST(id AS TEXT), name, phone, email, sex, registeredAt, COALESCE(school, '') FROM participants`);
       db.exec(`DROP TABLE participants`);
       db.exec(`ALTER TABLE participants_new RENAME TO participants`);
       console.log('Migration successful.');
@@ -94,7 +109,7 @@ async function main() {
         const jsonPath = path.resolve(process.cwd(), 'public/participants.json');
         if (fs.existsSync(jsonPath)) {
           const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-          const insert = db.prepare('INSERT INTO participants (id, name, phone, email, sex, registeredAt) VALUES ($id, $name, $phone, $email, $sex, $registeredAt)');
+          const insert = db.prepare('INSERT INTO participants (id, name, phone, email, sex, registeredAt, school) VALUES ($id, $name, $phone, $email, $sex, $registeredAt, $school)');
           const insertMany = db.transaction((participants: any[]) => {
             for (const p of participants) {
               insert.run({
@@ -103,7 +118,8 @@ async function main() {
                 $phone: p.phone || '',
                 $email: p.email || '',
                 $sex: p.sex || '',
-                $registeredAt: p.registeredAt || new Date().toISOString()
+                $registeredAt: p.registeredAt || new Date().toISOString(),
+                $school: p.school || ''
               });
             }
           });
@@ -117,8 +133,8 @@ async function main() {
 
     // 3. Prepared Statements
     const getParticipants = db.prepare('SELECT * FROM participants ORDER BY registeredAt DESC');
-    const insertParticipant = db.prepare('INSERT INTO participants (id, name, phone, email, sex, registeredAt) VALUES ($id, $name, $phone, $email, $sex, $registeredAt)');
-    const updateParticipant = db.prepare('UPDATE participants SET name = $name, phone = $phone, email = $email, sex = $sex, registeredAt = $registeredAt WHERE id = $id');
+    const insertParticipant = db.prepare('INSERT INTO participants (id, name, phone, email, sex, registeredAt, school) VALUES ($id, $name, $phone, $email, $sex, $registeredAt, $school)');
+    const updateParticipant = db.prepare('UPDATE participants SET name = $name, phone = $phone, email = $email, sex = $sex, registeredAt = $registeredAt, school = $school WHERE id = $id');
     const deleteParticipant = db.prepare('DELETE FROM participants WHERE id = $id');
     const clearAll = db.prepare('DELETE FROM participants');
 
@@ -179,7 +195,8 @@ async function main() {
                   $phone: data.phone || '',
                   $email: data.email || '',
                   $sex: data.sex || '',
-                  $registeredAt: data.registeredAt || new Date().toISOString()
+                  $registeredAt: data.registeredAt || new Date().toISOString(),
+                  $school: data.school || ''
                 });
                 return new Response(JSON.stringify({ id: data.id }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
               } else if (action === 'update') {
@@ -189,7 +206,8 @@ async function main() {
                   $phone: data.phone || '',
                   $email: data.email || '',
                   $sex: data.sex || '',
-                  $registeredAt: data.registeredAt || new Date().toISOString()
+                  $registeredAt: data.registeredAt || new Date().toISOString(),
+                  $school: data.school || ''
                 });
                 return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
               } else if (action === 'delete') {
@@ -204,7 +222,8 @@ async function main() {
                       $phone: p.phone || '',
                       $email: p.email || '',
                       $sex: p.sex || '',
-                      $registeredAt: p.registeredAt || new Date().toISOString()
+                      $registeredAt: p.registeredAt || new Date().toISOString(),
+                      $school: p.school || ''
                     });
                   }
                 });
@@ -231,7 +250,8 @@ async function main() {
                           $phone: p.phone || '',
                           $email: p.email || '',
                           $sex: p.sex || '',
-                          $registeredAt: p.registeredAt || new Date().toISOString()
+                          $registeredAt: p.registeredAt || new Date().toISOString(),
+                          $school: p.school || ''
                         });
                       }
                     });

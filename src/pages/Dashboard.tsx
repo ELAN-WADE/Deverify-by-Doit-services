@@ -11,8 +11,8 @@ import {
   Search,
   Clock,
   CheckCircle2,
-  ShieldCheck,
   Download,
+  ShieldCheck,
 } from 'lucide-react';
 import { useParticipantStore } from '@/hooks/useParticipantStore';
 import { toast } from 'sonner';
@@ -20,9 +20,8 @@ import { toast } from 'sonner';
 export default function Dashboard() {
   const navigate = useNavigate();
   const { stats } = useParticipantStore();
-
   const [typedText, setTypedText] = useState('');
-  const fullText = "DOIT Services NG, Young African Work and Ogun state Participants Verfication Platform.";
+  const fullText = "DOIT Services NG, Young African Work and Ogun state.";
 
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 

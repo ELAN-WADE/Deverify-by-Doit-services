@@ -26,7 +26,7 @@ const navItems = [
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
-const AppLogo = () => (
+export const AppLogo = () => (
   <div className="flex items-center gap-1 flex-wrap">
     <span className="font-bold text-sm text-slate-800 leading-tight">Deverify</span>
     <span className="text-[9px] text-slate-400 font-medium pt-0.5">by</span>

@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon.svg', 'icons/icon-base.png', 'participants.json'],
+      includeAssets: ['icons/icon.svg', 'participants.json'],
       manifest: {
         name: 'Deverify by DOIT Services',
         short_name: 'Deverify',
@@ -23,15 +23,21 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'icons/icon-base.png',
-            sizes: '192x192',
-            type: 'image/png',
+            src: 'icons/icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
             purpose: 'any maskable',
           },
           {
-            src: 'icons/icon-base.png',
+            src: 'icons/icon.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+          {
+            src: 'icons/icon.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable',
           },
         ],
