@@ -155,7 +155,7 @@ export default function Layout({ children }: LayoutProps) {
         {/* Scrollable page content */}
         <main className="flex-1 overflow-hidden relative">
           {/* Watermark */}
-          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.02]">
+          <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.05]">
             <ShieldCheck className="w-[80vh] h-[80vh] text-slate-900" strokeWidth={3} />
           </div>
 
