@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 export interface Participant {
   id: string;
@@ -17,8 +18,6 @@ interface OfflineAction {
   payload: any;
   timestamp: number;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export function useParticipantStore() {
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -53,9 +52,14 @@ export function useParticipantStore() {
   // 2. Fetch from Live Database
   const fetchParticipants = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/participants?t=${Date.now()}`, { cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
+      const { data, error } = await supabase
+        .from('participants')
+        .select('*')
+        .order('registeredAt', { ascending: false });
+
+      if (error) throw error;
+      
+      if (data) {
         saveCache(data); // update cache
         setInitialized(true);
       }
@@ -80,31 +84,38 @@ export function useParticipantStore() {
 
     for (const action of queue) {
       try {
-        const reqHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (action.type === 'clear' || action.type === 'reset') {
-          reqHeaders['x-api-key'] = 'doitservices2026';
+        let error = null;
+
+        if (action.type === 'add') {
+          const res = await supabase.from('participants').insert([action.payload]);
+          error = res.error;
+        } else if (action.type === 'update') {
+          const { id, ...updates } = action.payload;
+          const res = await supabase.from('participants').update(updates).eq('id', id);
+          error = res.error;
+        } else if (action.type === 'delete') {
+          const res = await supabase.from('participants').delete().eq('id', action.payload.id);
+          error = res.error;
+        } else if (action.type === 'import') {
+          const res = await supabase.from('participants').insert(action.payload);
+          error = res.error;
+        } else if (action.type === 'clear' || action.type === 'reset') {
+           // Delete all records (requires filter in supabase-js)
+           const res = await supabase.from('participants').delete().not('id', 'is', null);
+           error = res.error;
         }
 
-        const res = await fetch(`${API_BASE_URL}/api/participants`, {
-          method: 'POST',
-          headers: reqHeaders,
-          body: JSON.stringify({ action: action.type, data: action.payload })
-        });
-        
-        // If 200 OK or 409 Conflict (Duplicate), we consider it "processed" so it doesn't get stuck forever
-        if (res.ok || res.status === 409) {
+        if (!error) {
           successCount++;
           successIds.add(action.id);
-        } else if (res.status === 500) {
-          // If the server throws a 500 (e.g. UNIQUE constraint failed), we should still remove it from the queue so it doesn't block forever
-          const errorData = await res.json().catch(() => ({}));
-          if (errorData.error && errorData.error.includes('UNIQUE constraint failed')) {
+        } else {
+          console.error("Sync error:", error);
+          if (error.code === '23505' || error.code === '23503') { 
+            // Postgres constraint violation, skip to not block queue
             successIds.add(action.id);
           } else {
              break; // Unknown Server error, stop syncing
           }
-        } else {
-          break; // Other Server error, stop syncing
         }
       } catch (e) {
         break; // Network error, stop syncing
